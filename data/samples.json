@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "category": "fully_correct",
+    "question": "Who discovered penicillin and when?",
+    "answer": "Alexander Fleming discovered penicillin in 1928 at St. Mary's Hospital in London. He shared the Nobel Prize in Physiology or Medicine in 1945 for this breakthrough.",
+    "expected_note": "Fully correct. All claims should be supported."
+  },
+  {
+    "id": 2,
+    "category": "fully_correct",
+    "question": "What happened during the Apollo 11 mission?",
+    "answer": "The Apollo 11 mission landed on the Moon in July 1969. Commander Neil Armstrong and Lunar Module Pilot Buzz Aldrin walked on the lunar surface, while Command Module Pilot Michael Collins orbited above.",
+    "expected_note": "Fully correct. All claims regarding Apollo 11 crew and landing should be supported."
+  },
+  {
+    "id": 3,
+    "category": "fully_correct",
+    "question": "How was the structure of DNA discovered?",
+    "answer": "James Watson and Francis Crick proposed the double-helix structure of DNA in 1953. Their work relied on X-ray diffraction images taken by Rosalind Franklin.",
+    "expected_note": "Fully correct. Claims regarding Watson, Crick, Franklin, and 1953 should be supported."
+  },
+  {
+    "id": 4,
+    "category": "one_false_fact",
+    "question": "Who was the first person to climb Mount Everest and how tall is it?",
+    "answer": "Mount Everest's summit stands at 8,848 meters above sea level. It was first successfully summited in May 1953 by Sir Edmund Hillary and astronaut Neil Armstrong.",
+    "expected_note": "One false fact: Neil Armstrong climbing Mount Everest in 1953 is false (it was Tenzing Norgay) and should be contradicted; height and Hillary should be supported."
+  },
+  {
+    "id": 5,
+    "category": "one_false_fact",
+    "question": "When did World War II begin and end?",
+    "answer": "World War II began in September 1939 when Nazi Germany invaded France. The global conflict concluded in 1945 with the unconditional surrender of the Axis powers.",
+    "expected_note": "One false fact: Germany invaded Poland in September 1939, not France; this claim should be contradicted."
+  },
+  {
+    "id": 6,
+    "category": "one_false_fact",
+    "question": "Can you provide key facts about our Solar System?",
+    "answer": "The Sun is classified as a G-type main-sequence star. Jupiter is the largest planet in our solar system. Mars is the closest planet to the Sun.",
+    "expected_note": "One false fact: Mars is not the closest planet to the Sun (Mercury is), so that claim should be contradicted."
+  },
+  {
+    "id": 7,
+    "category": "no_public_evidence",
+    "question": "What is special about the Blue Fern bakery in Willow Creek?",
+    "answer": "The Blue Fern bakery in Willow Creek holds a secret 18th-century recipe for starflower elderberry bread that won the regional bakers guild crown in 2022.",
+    "expected_note": "No good public evidence: Fictional/obscure small town claim; should be unsupported."
+  },
+  {
+    "id": 8,
+    "category": "no_public_evidence",
+    "question": "What invention did Kevin McAllister create in his Chicago basement in 2024?",
+    "answer": "In January 2024, Kevin McAllister built a magnetic anti-gravity perpetual motion toaster in his Chicago basement that toasts bread using quantum microwave resonance.",
+    "expected_note": "No good public evidence: Unverifiable fictional assertion; should be unsupported."
+  },
+  {
+    "id": 9,
+    "category": "long_multi_fact",
+    "question": "What were Isaac Newton's major scientific contributions and career highlights?",
+    "answer": "Sir Isaac Newton was an English mathematician and physicist born in 1643. He formulated the three fundamental laws of motion. He published Philosophiæ Naturalis Principia Mathematica in 1687. Newton developed infinitesimal calculus independently around the same time as Leibniz. He designed and constructed the first practical reflecting telescope. Later in life, he served as the Master of the Royal Mint in London.",
+    "expected_note": "Long multi-fact answer (6 distinct claims). All are historically verified and should be supported."
+  },
+  {
+    "id": 10,
+    "category": "long_multi_fact",
+    "question": "Can you summarize the life and accomplishments of Marie Curie?",
+    "answer": "Marie Curie was a Polish-born physicist and chemist who conducted pioneering research on radioactivity. She was the first woman to win a Nobel Prize when she received the Nobel Prize in Physics in 1903. She discovered the radioactive elements polonium and radium. In 1911, she was awarded her second Nobel Prize, which was in Literature. Curie died in 1934 from aplastic anemia caused by radiation exposure.",
+    "expected_note": "Long multi-fact answer (6 distinct claims). Her 1911 Nobel Prize was in Chemistry, not Literature; that claim should be contradicted, while the other 5 are supported."
+  }
+]
