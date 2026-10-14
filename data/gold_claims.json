@@ -1,0 +1,368 @@
+[
+  {
+    "id": 1,
+    "category": "correct",
+    "question": "Who discovered penicillin and when?",
+    "answer": "Alexander Fleming discovered penicillin in 1928 at St. Mary's Hospital in London. He shared the Nobel Prize in Physiology or Medicine in 1945 for this breakthrough.",
+    "gold_claims": [
+      {"text": "Alexander Fleming discovered penicillin in 1928.", "label": "supported"},
+      {"text": "Alexander Fleming discovered penicillin at St. Mary's Hospital in London.", "label": "supported"},
+      {"text": "Alexander Fleming shared the Nobel Prize in Physiology or Medicine in 1945.", "label": "supported"}
+    ],
+    "notes": "Standard true history."
+  },
+  {
+    "id": 2,
+    "category": "correct",
+    "question": "What happened during the Apollo 11 mission?",
+    "answer": "The Apollo 11 mission landed on the Moon in July 1969. Neil Armstrong and Buzz Aldrin walked on the lunar surface, while Michael Collins orbited in the command module.",
+    "gold_claims": [
+      {"text": "The Apollo 11 mission landed on the Moon in July 1969.", "label": "supported"},
+      {"text": "Neil Armstrong walked on the lunar surface.", "label": "supported"},
+      {"text": "Buzz Aldrin walked on the lunar surface.", "label": "supported"},
+      {"text": "Michael Collins orbited in the command module during the Apollo 11 mission.", "label": "supported"}
+    ],
+    "notes": "Apollo 11 historical landing."
+  },
+  {
+    "id": 3,
+    "category": "correct",
+    "question": "How was the structure of DNA discovered?",
+    "answer": "James Watson and Francis Crick proposed the double-helix structure of DNA in 1953. Their discovery relied on X-ray diffraction images taken by Rosalind Franklin.",
+    "gold_claims": [
+      {"text": "James Watson and Francis Crick proposed the double-helix structure of DNA in 1953.", "label": "supported"},
+      {"text": "Rosalind Franklin took X-ray diffraction images of DNA.", "label": "supported"},
+      {"text": "James Watson and Francis Crick's discovery relied on Rosalind Franklin's X-ray diffraction images.", "label": "supported"}
+    ],
+    "notes": "DNA double helix discovery facts."
+  },
+  {
+    "id": 4,
+    "category": "correct",
+    "question": "Who created the Python programming language?",
+    "answer": "Guido van Rossum created the Python programming language, which was first released in 1991. The language was named after the British comedy group Monty Python.",
+    "gold_claims": [
+      {"text": "Guido van Rossum created the Python programming language.", "label": "supported"},
+      {"text": "Python was first released in 1991.", "label": "supported"},
+      {"text": "Python was named after the comedy group Monty Python.", "label": "supported"}
+    ],
+    "notes": "Python creator and naming history."
+  },
+  {
+    "id": 5,
+    "category": "correct",
+    "question": "When was Albert Einstein's general theory of relativity confirmed?",
+    "answer": "Albert Einstein published his general theory of relativity in 1915. In 1919, Sir Arthur Eddington measured the deflection of starlight during a solar eclipse, confirming Einstein's predictions.",
+    "gold_claims": [
+      {"text": "Albert Einstein published the general theory of relativity in 1915.", "label": "supported"},
+      {"text": "Sir Arthur Eddington measured the deflection of starlight during a solar eclipse in 1919.", "label": "supported"},
+      {"text": "Arthur Eddington's 1919 observations confirmed Albert Einstein's predictions of general relativity.", "label": "supported"}
+    ],
+    "notes": "Einstein relativity publication and 1919 confirmation."
+  },
+  {
+    "id": 6,
+    "category": "correct",
+    "question": "When was the Eiffel Tower built and who built it?",
+    "answer": "The Eiffel Tower was designed by Gustave Eiffel's engineering company and opened in Paris in 1889. It was constructed as the centerpiece for the 1889 World's Fair.",
+    "gold_claims": [
+      {"text": "The Eiffel Tower was designed by Gustave Eiffel's engineering company.", "label": "supported"},
+      {"text": "The Eiffel Tower opened in Paris in 1889.", "label": "supported"},
+      {"text": "The Eiffel Tower was constructed as the centerpiece for the 1889 World's Fair.", "label": "supported"}
+    ],
+    "notes": "Eiffel Tower origin facts."
+  },
+  {
+    "id": 7,
+    "category": "planted_error",
+    "question": "Who first summited Mount Everest and how tall is it?",
+    "answer": "Mount Everest summit stands at 8,848 meters above sea level. Sir Edmund Hillary and Neil Armstrong first summited Mount Everest in May 1953.",
+    "gold_claims": [
+      {"text": "Mount Everest summit stands at 8,848 meters above sea level.", "label": "supported"},
+      {"text": "Sir Edmund Hillary first summited Mount Everest in May 1953.", "label": "supported"},
+      {"text": "Neil Armstrong first summited Mount Everest in May 1953.", "label": "contradicted"}
+    ],
+    "notes": "Planted error: Neil Armstrong did not summit Everest (Tenzing Norgay did)."
+  },
+  {
+    "id": 8,
+    "category": "planted_error",
+    "question": "When did World War II begin and end?",
+    "answer": "World War II began in September 1939 when Nazi Germany invaded France. The devastating conflict lasted until the unconditional surrender of the Axis powers in 1945.",
+    "gold_claims": [
+      {"text": "World War II began in September 1939.", "label": "supported"},
+      {"text": "Nazi Germany invaded France in September 1939.", "label": "contradicted"},
+      {"text": "World War II ended in 1945 with the surrender of the Axis powers.", "label": "supported"}
+    ],
+    "notes": "Planted error: Germany invaded Poland in September 1939, not France."
+  },
+  {
+    "id": 9,
+    "category": "planted_error",
+    "question": "Can you provide key facts about our Solar System?",
+    "answer": "The Sun is classified as a G-type main-sequence star. Jupiter is the largest planet in our solar system. Mars is the closest planet to the Sun.",
+    "gold_claims": [
+      {"text": "The Sun is classified as a G-type main-sequence star.", "label": "supported"},
+      {"text": "Jupiter is the largest planet in the solar system.", "label": "supported"},
+      {"text": "Mars is the closest planet to the Sun.", "label": "contradicted"}
+    ],
+    "notes": "Planted error: Mercury is the closest planet, not Mars."
+  },
+  {
+    "id": 10,
+    "category": "planted_error",
+    "question": "Who were the first presidents of the United States?",
+    "answer": "The United States Declaration of Independence was adopted in 1776. George Washington served as the first US President. Thomas Jefferson served as the second US President.",
+    "gold_claims": [
+      {"text": "The United States Declaration of Independence was adopted in 1776.", "label": "supported"},
+      {"text": "George Washington served as the first US President.", "label": "supported"},
+      {"text": "Thomas Jefferson served as the second US President.", "label": "contradicted"}
+    ],
+    "notes": "Planted error: John Adams was the 2nd president; Jefferson was the 3rd."
+  },
+  {
+    "id": 11,
+    "category": "planted_error",
+    "question": "What are the chemical symbols for gold and silver?",
+    "answer": "Dmitri Mendeleev published the periodic table in 1869. The chemical symbol for gold is Au. The chemical symbol for silver is Si.",
+    "gold_claims": [
+      {"text": "Dmitri Mendeleev published the periodic table in 1869.", "label": "supported"},
+      {"text": "The chemical symbol for gold is Au.", "label": "supported"},
+      {"text": "The chemical symbol for silver is Si.", "label": "contradicted"}
+    ],
+    "notes": "Planted error: Chemical symbol for silver is Ag (Si is silicon)."
+  },
+  {
+    "id": 12,
+    "category": "planted_error",
+    "question": "What happened to the Titanic ocean liner?",
+    "answer": "The RMS Titanic sank in April 1912 after colliding with an iceberg. It was sailing from Southampton to New York City. The ship was owned and operated by the Cunard Line.",
+    "gold_claims": [
+      {"text": "The RMS Titanic sank in April 1912 after colliding with an iceberg.", "label": "supported"},
+      {"text": "The RMS Titanic was sailing from Southampton to New York City.", "label": "supported"},
+      {"text": "The RMS Titanic was owned and operated by the Cunard Line.", "label": "contradicted"}
+    ],
+    "notes": "Planted error: Titanic was operated by White Star Line, not Cunard Line."
+  },
+  {
+    "id": 13,
+    "category": "fabricated_entity",
+    "question": "What is Cafe Zyxvu known for in Iceland?",
+    "answer": "Cafe Zyxvu is located in rural Iceland. It served purple fermented moss stew to tourists in 2024.",
+    "gold_claims": [
+      {"text": "Cafe Zyxvu is located in rural Iceland.", "label": "unsupported"},
+      {"text": "Cafe Zyxvu served purple fermented moss stew to tourists in 2024.", "label": "unsupported"}
+    ],
+    "notes": "Fabricated entity: completely fictitious cafe and menu item."
+  },
+  {
+    "id": 14,
+    "category": "fabricated_entity",
+    "question": "What invention did Kevin McAllister build in 2024?",
+    "answer": "In January 2024, Kevin McAllister built a magnetic anti-gravity toaster in his Chicago basement. The toaster toasts bread using quantum microwave resonance.",
+    "gold_claims": [
+      {"text": "Kevin McAllister built a magnetic anti-gravity toaster in Chicago in January 2024.", "label": "unsupported"},
+      {"text": "The magnetic anti-gravity toaster toasts bread using quantum microwave resonance.", "label": "unsupported"}
+    ],
+    "notes": "Fabricated entity: fictional perpetual motion appliance."
+  },
+  {
+    "id": 15,
+    "category": "fabricated_entity",
+    "question": "Who is Dr. Aris Thorne and what did he invent at Cambridge?",
+    "answer": "Dr. Aris Thorne invented the ChronoSync tachyon watch at the University of Cambridge in 2023. The device slows biological aging by 15% using localized temporal fields.",
+    "gold_claims": [
+      {"text": "Dr. Aris Thorne invented the ChronoSync tachyon watch at the University of Cambridge in 2023.", "label": "unsupported"},
+      {"text": "The ChronoSync tachyon watch slows biological aging by 15%.", "label": "unsupported"}
+    ],
+    "notes": "Fabricated entity: non-existent scientist and sci-fi invention."
+  },
+  {
+    "id": 16,
+    "category": "fabricated_entity",
+    "question": "What is the capital and currency of the Republic of Veridia?",
+    "answer": "The Republic of Veridia is an island sovereign state in the South Pacific founded in 1998. Its official capital is Port Zephyr, and its national currency is the Veridian Sol.",
+    "gold_claims": [
+      {"text": "The Republic of Veridia is an island sovereign state in the South Pacific founded in 1998.", "label": "unsupported"},
+      {"text": "The official capital of the Republic of Veridia is Port Zephyr.", "label": "unsupported"},
+      {"text": "The national currency of the Republic of Veridia is the Veridian Sol.", "label": "unsupported"}
+    ],
+    "notes": "Fabricated entity: fictitious micronation."
+  },
+  {
+    "id": 17,
+    "category": "fabricated_entity",
+    "question": "What occurs at the Oakhaven Cryptid Festival?",
+    "answer": "The Oakhaven Cryptid Festival is an annual gathering in Oakhaven, Oregon, dedicated to the winged swamp badger. Over 25,000 attendees gathered for the festival in September 2023.",
+    "gold_claims": [
+      {"text": "The Oakhaven Cryptid Festival is an annual festival in Oakhaven, Oregon, celebrating the winged swamp badger.", "label": "unsupported"},
+      {"text": "Over 25,000 attendees gathered for the Oakhaven Cryptid Festival in September 2023.", "label": "unsupported"}
+    ],
+    "notes": "Fabricated entity: non-existent festival and mythical creature."
+  },
+  {
+    "id": 18,
+    "category": "fabricated_entity",
+    "question": "What is the LuminaTech zero-point battery?",
+    "answer": "LuminaTech unveiled a commercial desktop cold-fusion battery in November 2022. The battery produces 50 kilowatts of continuous electricity from ambient humidity.",
+    "gold_claims": [
+      {"text": "LuminaTech unveiled a commercial desktop cold-fusion battery in November 2022.", "label": "unsupported"},
+      {"text": "The LuminaTech battery produces 50 kilowatts of continuous electricity from ambient humidity.", "label": "unsupported"}
+    ],
+    "notes": "Fabricated entity: fictitious energy product."
+  },
+  {
+    "id": 19,
+    "category": "outdated_fact",
+    "question": "How is Pluto classified in astronomy?",
+    "answer": "Pluto is currently classified as the ninth major planet of the solar system. It was discovered by Clyde Tombaugh in 1930.",
+    "gold_claims": [
+      {"text": "Pluto is currently classified as a major planet of the solar system.", "label": "contradicted"},
+      {"text": "Clyde Tombaugh discovered Pluto in 1930.", "label": "supported"}
+    ],
+    "notes": "Outdated fact: Pluto was demoted to dwarf planet status by the IAU in 2006."
+  },
+  {
+    "id": 20,
+    "category": "outdated_fact",
+    "question": "What is the current population of planet Earth?",
+    "answer": "The human population of planet Earth is currently under 6 billion people.",
+    "gold_claims": [
+      {"text": "The human population of Earth is currently under 6 billion people.", "label": "contradicted"}
+    ],
+    "notes": "Outdated fact: Global human population reached 6 billion in 1999 and passed 8 billion in 2022."
+  },
+  {
+    "id": 21,
+    "category": "outdated_fact",
+    "question": "Is the United Kingdom a member state of the European Union?",
+    "answer": "The United Kingdom is a member state of the European Union. The European Union has its headquarters in Brussels, Belgium.",
+    "gold_claims": [
+      {"text": "The United Kingdom is a member state of the European Union.", "label": "contradicted"},
+      {"text": "The European Union has headquarters in Brussels, Belgium.", "label": "supported"}
+    ],
+    "notes": "Outdated fact: The UK left the European Union in 2020 (Brexit)."
+  },
+  {
+    "id": 22,
+    "category": "outdated_fact",
+    "question": "What is the deepest known oceanic trench on Earth?",
+    "answer": "The Puerto Rico Trench is the deepest oceanic trench on planet Earth.",
+    "gold_claims": [
+      {"text": "The Puerto Rico Trench is the deepest oceanic trench on Earth.", "label": "contradicted"}
+    ],
+    "notes": "Outdated/false fact: The Mariana Trench (Challenger Deep) is the deepest trench on Earth."
+  },
+  {
+    "id": 23,
+    "category": "outdated_fact",
+    "question": "What is element 118 on the periodic table called?",
+    "answer": "Element 118 on the periodic table remains an unnamed provisional element officially called Ununoctium.",
+    "gold_claims": [
+      {"text": "Element 118 on the periodic table is officially called Ununoctium and has no official name.", "label": "contradicted"}
+    ],
+    "notes": "Outdated fact: IUPAC officially named Element 118 'Oganesson' (Og) in 2016."
+  },
+  {
+    "id": 24,
+    "category": "outdated_fact",
+    "question": "Who is the reigning monarch of the United Kingdom?",
+    "answer": "Queen Elizabeth II is the reigning monarch of the United Kingdom. Buckingham Palace is located in London.",
+    "gold_claims": [
+      {"text": "Queen Elizabeth II is the reigning monarch of the United Kingdom.", "label": "contradicted"},
+      {"text": "Buckingham Palace is located in London.", "label": "supported"}
+    ],
+    "notes": "Outdated fact: Queen Elizabeth II died in September 2022; King Charles III is monarch."
+  },
+  {
+    "id": 25,
+    "category": "long_multi_fact",
+    "question": "What were Isaac Newton's major scientific contributions?",
+    "answer": "Sir Isaac Newton was an English mathematician and physicist born in 1643. He formulated the three fundamental laws of motion. He published Philosophiæ Naturalis Principia Mathematica in 1687. Newton developed infinitesimal calculus independently around the same time as Leibniz. He designed and built the first practical reflecting telescope. Later in life, he served as the Master of the Royal Mint in London.",
+    "gold_claims": [
+      {"text": "Sir Isaac Newton was born in 1643.", "label": "supported"},
+      {"text": "Isaac Newton formulated the three fundamental laws of motion.", "label": "supported"},
+      {"text": "Isaac Newton published Philosophiæ Naturalis Principia Mathematica in 1687.", "label": "supported"},
+      {"text": "Isaac Newton developed calculus independently around the same time as Leibniz.", "label": "supported"},
+      {"text": "Isaac Newton designed and built the first practical reflecting telescope.", "label": "supported"},
+      {"text": "Isaac Newton served as the Master of the Royal Mint in London.", "label": "supported"}
+    ],
+    "notes": "Long multi-fact: 6 claims, all historically verified."
+  },
+  {
+    "id": 26,
+    "category": "long_multi_fact",
+    "question": "Can you summarize the life and accomplishments of Marie Curie?",
+    "answer": "Marie Curie was a Polish-born physicist and chemist who conducted pioneering research on radioactivity. She was the first woman to win a Nobel Prize when she received the Physics prize in 1903. She discovered the chemical elements polonium and radium. In 1911, she was awarded a second Nobel Prize, which was in Literature. Curie died in 1934 from aplastic anemia caused by radiation exposure.",
+    "gold_claims": [
+      {"text": "Marie Curie was a Polish-born physicist and chemist.", "label": "supported"},
+      {"text": "Marie Curie conducted pioneering research on radioactivity.", "label": "supported"},
+      {"text": "Marie Curie was the first woman to win a Nobel Prize.", "label": "supported"},
+      {"text": "Marie Curie received the Nobel Prize in Physics in 1903.", "label": "supported"},
+      {"text": "Marie Curie discovered the chemical elements polonium and radium.", "label": "supported"},
+      {"text": "Marie Curie was awarded the Nobel Prize in Literature in 1911.", "label": "contradicted"},
+      {"text": "Marie Curie died in 1934 from aplastic anemia caused by radiation exposure.", "label": "supported"}
+    ],
+    "notes": "Long multi-fact: 7 claims, with Literature Nobel planted error (Chemistry in 1911)."
+  },
+  {
+    "id": 27,
+    "category": "long_multi_fact",
+    "question": "What was Charles Darwin's scientific career?",
+    "answer": "Charles Darwin was an English naturalist born in 1809. In 1831, he joined the survey expedition on the HMS Beagle. He conducted extensive geological and biological observations in the Galapagos Islands. In 1859, Darwin published On the Origin of Species. He proposed natural selection as the mechanism of evolutionary change. Darwin was buried in Westminster Abbey upon his death in 1882.",
+    "gold_claims": [
+      {"text": "Charles Darwin was an English naturalist born in 1809.", "label": "supported"},
+      {"text": "Charles Darwin joined the survey expedition on the HMS Beagle in 1831.", "label": "supported"},
+      {"text": "Charles Darwin visited and conducted observations in the Galapagos Islands.", "label": "supported"},
+      {"text": "Charles Darwin published On the Origin of Species in 1859.", "label": "supported"},
+      {"text": "Charles Darwin proposed natural selection as the mechanism of evolution.", "label": "supported"},
+      {"text": "Charles Darwin was buried in Westminster Abbey in 1882.", "label": "supported"}
+    ],
+    "notes": "Long multi-fact: 6 historical claims, all true."
+  },
+  {
+    "id": 28,
+    "category": "long_multi_fact",
+    "question": "Who was Ada Lovelace?",
+    "answer": "Ada Lovelace was an English mathematician and the daughter of poet Lord Byron. She collaborated with Charles Babbage on the mechanical general-purpose Analytical Engine. In 1843, she translated Luigi Menabrea's article and appended extensive notes. Lovelace wrote what is regarded as the first computer algorithm. She became the Prime Minister of the United Kingdom in 1848. Lovelace passed away in 1852.",
+    "gold_claims": [
+      {"text": "Ada Lovelace was the daughter of poet Lord Byron.", "label": "supported"},
+      {"text": "Ada Lovelace collaborated with Charles Babbage on the Analytical Engine.", "label": "supported"},
+      {"text": "Ada Lovelace wrote what is regarded as the first computer algorithm.", "label": "supported"},
+      {"text": "Ada Lovelace translated Luigi Menabrea's article on the Analytical Engine in 1843.", "label": "supported"},
+      {"text": "Ada Lovelace became the Prime Minister of the United Kingdom in 1848.", "label": "contradicted"},
+      {"text": "Ada Lovelace died in 1852.", "label": "supported"}
+    ],
+    "notes": "Long multi-fact: 6 claims with planted error (Ada Lovelace was never Prime Minister)."
+  },
+  {
+    "id": 29,
+    "category": "long_multi_fact",
+    "question": "What are key facts about the International Space Station?",
+    "answer": "The International Space Station launched its first module, Zarya, into orbit in November 1998. The station has been continuously inhabited since November 2000. It is a joint collaboration involving NASA, Roscosmos, JAXA, ESA, and CSA. The ISS orbits Earth approximately once every 90 minutes. It travels at a speed of roughly 28,000 kilometers per hour. The station orbits at a geostationary altitude of 36,000 kilometers above Earth.",
+    "gold_claims": [
+      {"text": "The first ISS module Zarya was launched in November 1998.", "label": "supported"},
+      {"text": "The International Space Station has been continuously inhabited since November 2000.", "label": "supported"},
+      {"text": "The ISS is a joint collaboration of NASA, Roscosmos, JAXA, ESA, and CSA.", "label": "supported"},
+      {"text": "The ISS orbits Earth approximately once every 90 minutes.", "label": "supported"},
+      {"text": "The ISS travels at approximately 28,000 kilometers per hour.", "label": "supported"},
+      {"text": "The International Space Station orbits at a geostationary altitude of 36,000 kilometers.", "label": "contradicted"}
+    ],
+    "notes": "Long multi-fact: 6 claims with planted error (ISS is in Low Earth Orbit ~400km, not geostationary 36,000km)."
+  },
+  {
+    "id": 30,
+    "category": "long_multi_fact",
+    "question": "What is the history of the Great Wall of China?",
+    "answer": "The Great Wall of China was constructed along the northern borders of ancient Chinese states. Emperor Qin Shi Huang joined together several existing wall sections in the third century BC. The Ming dynasty constructed the most famous and well-preserved masonry sections. The wall system spans over 20,000 kilometers in total length. The Great Wall is easily visible from the Moon with the naked human eye. The Great Wall was declared a UNESCO World Heritage site in 1987.",
+    "gold_claims": [
+      {"text": "The Great Wall of China was built along northern borders of ancient China.", "label": "supported"},
+      {"text": "Emperor Qin Shi Huang joined existing wall sections in the third century BC.", "label": "supported"},
+      {"text": "The Ming dynasty constructed well-preserved sections of the Great Wall.", "label": "supported"},
+      {"text": "The Great Wall system measures over 20,000 kilometers in total length.", "label": "supported"},
+      {"text": "The Great Wall of China is visible from the Moon with the naked human eye.", "label": "contradicted"},
+      {"text": "The Great Wall was designated a UNESCO World Heritage Site in 1987.", "label": "supported"}
+    ],
+    "notes": "Long multi-fact: 6 claims with planted myth (Wall visible from Moon naked eye is contradicted/false myth)."
+  }
+]

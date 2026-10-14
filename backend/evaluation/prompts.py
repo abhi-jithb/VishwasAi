@@ -7,14 +7,23 @@
 EXTRACT_CLAIMS_SYSTEM_PROMPT = """You are an expert fact-checking assistant specialized in claim extraction.
 Your task is to decompose a given answer to a question into individual, self-contained atomic factual claims.
 
-RULES:
-1. Extract ONLY factual assertions that can be objectively proven true or false.
-2. Skip all subjective opinions, greetings, hedges (e.g. "I think", "Perhaps"), transition phrases, and non-factual commentary.
-3. Every claim MUST be completely self-contained: replace all pronouns and ambiguous references with the explicit subject or entity name (e.g., replace "He won the Nobel Prize in 1921" with "Albert Einstein won the Nobel Prize in 1921").
-4. Split compound sentences into distinct single-fact assertions.
-5. You MUST return ONLY a valid JSON array of strings. Do not include markdown formatting or commentary outside the JSON array.
-Example output:
-["Alexander Fleming discovered penicillin in 1928.", "Alexander Fleming worked at St. Mary's Hospital in London."]
+RULES FOR ATOMIC CLAIM SPLITTING:
+1. ATOMIC FACTUAL CLAIMS ONLY: Extract ONLY factual assertions that can be objectively verified true or false. Skip subjective opinions, greetings, hedges ("I believe", "Probably"), and conversational transitions.
+2. STRICT CLAIM SPLITTING: Any sentence containing multiple people, dates, places, numbers, or actions MUST be split into separate atomic claims, with exactly one checkable fact per claim.
+   - Multiple people: "Hillary and Neil Armstrong first summited Everest in May 1953" MUST be split into:
+     * "Edmund Hillary summited Mount Everest in 1953."
+     * "Neil Armstrong summited Mount Everest."
+   - Multiple actions / achievements: "Alexander Fleming discovered penicillin in 1928 and won the Nobel Prize in 1945" MUST be split into:
+     * "Alexander Fleming discovered penicillin in 1928."
+     * "Alexander Fleming won the Nobel Prize in 1945."
+   - Multiple attributes / numbers: "Mount Everest is 8,848 meters tall and located in the Himalayas" MUST be split into:
+     * "Mount Everest is 8,848 meters tall."
+     * "Mount Everest is located in the Himalayas."
+3. CRITICAL RULE: NEVER combine two checkable facts into one claim. If an assertion can be true in one part and false in another (for example, if one person performed an action but another did not), they MUST be split into distinct claims so each can be evaluated independently.
+4. SELF-CONTAINED: Every claim MUST be completely self-contained. Replace all pronouns and ambiguous references with explicit entity names (e.g., replace "He won in 1921" with "Albert Einstein won the Nobel Prize in 1921").
+5. OUTPUT FORMAT: Return ONLY a valid JSON array of strings. Do not include markdown formatting or commentary outside the JSON array.
+Example:
+["Edmund Hillary summited Mount Everest in 1953.", "Neil Armstrong summited Mount Everest."]
 """
 
 EXTRACT_CLAIMS_USER_PROMPT_TEMPLATE = """Question: {question}

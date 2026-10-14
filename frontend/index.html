@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vishwas AI – Factuality Auditor</title>
+  <meta name="description" content="Vishwas AI audits LLM answers by splitting them into atomic factual claims, searching for evidence, and verifying each claim." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Design tokens ── */
+    :root {
+      --bg:        #0a0d14;
+      --surface:   #111520;
+      --surface2:  #181e2e;
+      --border:    #1f2a42;
+      --border2:   #2a3550;
+      --text:      #e8eaf0;
+      --text-muted:#7a88a8;
+      --text-dim:  #4a5570;
+      --accent:    #6c8fff;
+      --accent-glow: rgba(108,143,255,.15);
+      --green:     #34d399;
+      --green-bg:  rgba(52,211,153,.1);
+      --red:       #f87171;
+      --red-bg:    rgba(248,113,113,.1);
+      --yellow:    #fbbf24;
+      --yellow-bg: rgba(251,191,36,.1);
+      --radius:    12px;
+      --radius-sm: 8px;
+      --shadow:    0 4px 24px rgba(0,0,0,.5);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 40px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,13,20,.85);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #6c8fff, #a78bfa);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .badge {
+      font-size: .7rem;
+      font-weight: 600;
+      background: var(--accent-glow);
+      color: var(--accent);
+      border: 1px solid rgba(108,143,255,.3);
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+
+    /* ── Main layout ── */
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .hero h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      line-height: 1.2;
+      background: linear-gradient(135deg, #e8eaf0 30%, #6c8fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    /* ── Form ── */
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 8px;
+    }
+    textarea {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: inherit;
+      font-size: .95rem;
+      padding: 12px 14px;
+      resize: vertical;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    #question { min-height: 70px; }
+    #answer   { min-height: 140px; }
+
+    .char-count {
+      text-align: right;
+      font-size: .78rem;
+      color: var(--text-dim);
+      margin-top: 4px;
+      font-variant-numeric: tabular-nums;
+    }
+    .char-count.warn { color: var(--yellow); }
+    .char-count.over { color: var(--red); }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all .18s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #6c8fff, #a78bfa);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(108,143,255,.35);
+    }
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(108,143,255,.5);
+    }
+    .btn-primary:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-secondary {
+      background: var(--surface2);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover {
+      background: var(--border2);
+      color: var(--text);
+    }
+
+    /* ── Spinner ── */
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Loading skeleton ── */
+    #loading {
+      display: none;
+      text-align: center;
+      padding: 48px 0;
+    }
+    .loading-inner {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .loading-spinner-lg {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    .loading-text {
+      color: var(--text-muted);
+      font-size: .95rem;
+    }
+    .loading-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: .8rem;
+      color: var(--text-dim);
+    }
+    .loading-steps span {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    .loading-steps span:nth-child(2) .dot { animation-delay: .5s; }
+    .loading-steps span:nth-child(3) .dot { animation-delay: 1s; }
+    @keyframes pulse { 0%,100%{opacity:.3} 50%{opacity:1} }
+
+    /* ── Error ── */
+    #error-box {
+      display: none;
+      background: var(--red-bg);
+      border: 1px solid rgba(248,113,113,.3);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      color: var(--red);
+      font-size: .9rem;
+      margin-top: 16px;
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    #error-box .error-icon { font-size: 1.1rem; flex-shrink: 0; }
+    #error-box .error-text { flex: 1; }
+
+    /* ── Results ── */
+    #results { display: none; }
+
+    /* Summary bar */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 580px) { .summary-grid { grid-template-columns: 1fr; } }
+
+    .metric-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+      text-align: center;
+    }
+    .metric-label {
+      font-size: .75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .metric-value {
+      font-size: 1.9rem;
+      font-weight: 700;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .metric-value.high  { color: var(--green); }
+    .metric-value.mid   { color: var(--yellow); }
+    .metric-value.low   { color: var(--red); }
+    .metric-sub {
+      font-size: .75rem;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    .interpretation-banner {
+      background: linear-gradient(135deg, rgba(108,143,255,.08), rgba(167,139,250,.08));
+      border: 1px solid rgba(108,143,255,.2);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      color: var(--accent);
+      font-size: .9rem;
+      font-weight: 500;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Claims list */
+    .section-title {
+      font-size: .8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .claim-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      transition: border-color .15s;
+    }
+    .claim-card:hover { border-color: var(--border2); }
+    .claim-card.supported   { border-left: 3px solid var(--green); }
+    .claim-card.contradicted{ border-left: 3px solid var(--red); }
+    .claim-card.unsupported { border-left: 3px solid var(--yellow); }
+
+    .claim-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .claim-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: .75rem;
+      font-weight: 700;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .badge-supported    { background: var(--green-bg);  color: var(--green);  border: 1px solid rgba(52,211,153,.25); }
+    .badge-contradicted { background: var(--red-bg);    color: var(--red);    border: 1px solid rgba(248,113,113,.25); }
+    .badge-unsupported  { background: var(--yellow-bg); color: var(--yellow); border: 1px solid rgba(251,191,36,.25); }
+
+    .claim-text {
+      font-size: .92rem;
+      font-weight: 500;
+      flex: 1;
+      color: var(--text);
+    }
+
+    .claim-reasoning {
+      font-size: .83rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      padding-left: 2px;
+    }
+
+    .claim-sources {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .source-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: .74rem;
+      color: var(--accent);
+      background: var(--accent-glow);
+      border: 1px solid rgba(108,143,255,.2);
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+      transition: background .15s;
+      max-width: 260px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .source-link:hover { background: rgba(108,143,255,.25); }
+
+    /* Cost log */
+    .cost-log {
+      display: flex;
+      gap: 16px;
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: .78rem;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .cost-log span { color: var(--text-muted); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="/">
+    <div class="logo-icon">🔍</div>
+    Vishwas AI
+  </a>
+  <span class="badge">Factuality Auditor</span>
+</header>
+
+<main>
+  <div class="hero">
+    <h1>Fact-Check Any AI Answer</h1>
+    <p>Paste a question and an AI-generated answer. Vishwas AI splits it into atomic claims, searches the web, and verifies each one.</p>
+  </div>
+
+  <!-- Input card -->
+  <div class="card">
+    <div class="form-group">
+      <label for="question">Question</label>
+      <textarea id="question" rows="2" placeholder="e.g. Who discovered penicillin?"></textarea>
+    </div>
+    <div class="form-group">
+      <label for="answer">AI Answer <span style="font-weight:400;text-transform:none;letter-spacing:0">(max 3000 chars)</span></label>
+      <textarea id="answer" rows="6" placeholder="Paste the LLM answer you want to audit…"></textarea>
+      <div class="char-count" id="char-count">0 / 3000</div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" id="check-btn" onclick="runEval()">
+        <span id="btn-label">Check</span>
+      </button>
+      <button class="btn btn-secondary" id="example-btn" onclick="loadExample()">Load example</button>
+    </div>
+    <div id="error-box" role="alert">
+      <span class="error-icon">⚠️</span>
+      <span class="error-text" id="error-text"></span>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div id="loading">
+    <div class="loading-inner">
+      <div class="loading-spinner-lg"></div>
+      <p class="loading-text">Auditing answer…</p>
+      <div class="loading-steps">
+        <span><div class="dot"></div>Extracting atomic claims</span>
+        <span><div class="dot"></div>Searching for evidence</span>
+        <span><div class="dot"></div>Verifying each claim</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="results">
+    <div class="summary-grid">
+      <div class="metric-card">
+        <div class="metric-label">Factuality Score</div>
+        <div class="metric-value" id="m-factuality">—</div>
+        <div class="metric-sub">supported / total</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Verifiable Precision</div>
+        <div class="metric-value" id="m-precision">—</div>
+        <div class="metric-sub">supported / (sup + contra)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Unverifiable Rate</div>
+        <div class="metric-value" id="m-unverifiable">—</div>
+        <div class="metric-sub">unsupported / total</div>
+      </div>
+    </div>
+
+    <div class="interpretation-banner" id="interpretation-banner">
+      <span>💡</span>
+      <span id="interpretation-text"></span>
+    </div>
+
+    <div class="section-title" id="claims-title">Claims</div>
+    <div id="claims-list"></div>
+
+    <div class="cost-log" id="cost-log"></div>
+  </div>
+</main>
+
+<script>
+  // ── char counter ──────────────────────────────────────────────────────────
+  const answerTA = document.getElementById('answer');
+  const charCount = document.getElementById('char-count');
+  answerTA.addEventListener('input', () => {
+    const n = answerTA.value.length;
+    charCount.textContent = `${n} / 3000`;
+    charCount.className = 'char-count' + (n > 3000 ? ' over' : n > 2500 ? ' warn' : '');
+  });
+
+  // ── example ──────────────────────────────────────────────────────────────
+  function loadExample() {
+    document.getElementById('question').value =
+      'Who discovered penicillin and when?';
+    document.getElementById('answer').value =
+      "Alexander Fleming discovered penicillin in 1928 at St. Mary's Hospital in London. " +
+      "He shared the Nobel Prize in Physiology or Medicine in 1945 for this discovery. " +
+      "Penicillin became the first widely used antibiotic and revolutionised the treatment " +
+      "of bacterial infections during World War II.";
+    answerTA.dispatchEvent(new Event('input'));
+  }
+
+  // ── main eval call ────────────────────────────────────────────────────────
+  async function runEval() {
+    const question = document.getElementById('question').value.trim();
+    const answer   = document.getElementById('answer').value.trim();
+
+    // Client-side validation
+    setError('');
+    if (!question) { setError('Please enter a question.'); return; }
+    if (!answer)   { setError('Please enter an answer to audit.'); return; }
+    if (answer.length > 3000) { setError('Answer exceeds 3000 characters.'); return; }
+
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/evaluate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question, answer }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || data.detail || `Server error ${res.status}`);
+      }
+      renderResults(data);
+    } catch (err) {
+      setError(err.message || 'Unexpected error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // ── loading state ─────────────────────────────────────────────────────────
+  function setLoading(on) {
+    const btn       = document.getElementById('check-btn');
+    const label     = document.getElementById('btn-label');
+    const loading   = document.getElementById('loading');
+    const results   = document.getElementById('results');
+
+    btn.disabled = on;
+    if (on) {
+      label.innerHTML = '<div class="spinner"></div>Checking…';
+      loading.style.display = 'block';
+      results.style.display = 'none';
+    } else {
+      label.textContent = 'Check';
+      loading.style.display = 'none';
+    }
+  }
+
+  // ── error ─────────────────────────────────────────────────────────────────
+  function setError(msg) {
+    const box = document.getElementById('error-box');
+    const txt = document.getElementById('error-text');
+    if (msg) {
+      txt.textContent = msg;
+      box.style.display = 'flex';
+    } else {
+      box.style.display = 'none';
+    }
+  }
+
+  // ── render results ────────────────────────────────────────────────────────
+  function renderResults(data) {
+    const summary  = data.summary || {};
+    const claims   = data.claims  || [];
+    const costLog  = data.cost_log || {};
+
+    // Metrics
+    const factScore = summary.factuality_score;
+    const precision = summary.verifiable_precision;
+    const unverRate = summary.unverifiable_rate;
+
+    setMetric('m-factuality',    factScore, true);
+    setMetric('m-precision',     precision, true);
+    setMetric('m-unverifiable',  unverRate, false);   // lower is better
+
+    // Interpretation
+    document.getElementById('interpretation-text').textContent =
+      summary.interpretation || '';
+
+    // Claims
+    const list = document.getElementById('claims-list');
+    list.innerHTML = '';
+    document.getElementById('claims-title').textContent =
+      `${claims.length} Claim${claims.length !== 1 ? 's' : ''}`;
+
+    claims.forEach((claim, i) => {
+      const status  = claim.status || 'unsupported';
+      const icon    = status === 'supported' ? '✓' : status === 'contradicted' ? '✗' : '?';
+      const badgeClass = `badge-${status}`;
+
+      const sources = (claim.sources || []).map(url => {
+        const host = (() => { try { return new URL(url).hostname; } catch { return url; } })();
+        return `<a class="source-link" href="${escHtml(url)}" target="_blank" rel="noopener" title="${escHtml(url)}">
+          🔗 ${escHtml(host)}
+        </a>`;
+      }).join('');
+
+      list.innerHTML += `
+        <div class="claim-card ${escHtml(status)}">
+          <div class="claim-header">
+            <span class="claim-status-badge ${badgeClass}">${icon} ${status}</span>
+            <span class="claim-text">${escHtml(claim.text)}</span>
+          </div>
+          ${claim.reasoning ? `<p class="claim-reasoning">${escHtml(claim.reasoning)}</p>` : ''}
+          ${sources ? `<div class="claim-sources">${sources}</div>` : ''}
+        </div>`;
+    });
+
+    // Cost log
+    document.getElementById('cost-log').innerHTML =
+      `LLM calls: <span>${costLog.llm_calls ?? '—'}</span>&ensp;|&ensp;Search calls: <span>${costLog.search_calls ?? '—'}</span>`;
+
+    document.getElementById('results').style.display = 'block';
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function setMetric(id, val, higherIsBetter) {
+    const el = document.getElementById(id);
+    if (val === null || val === undefined) {
+      el.textContent = 'N/A';
+      el.className = 'metric-value';
+      return;
+    }
+    const pct = Math.round(val * 100);
+    el.textContent = `${pct}%`;
+    if (higherIsBetter) {
+      el.className = 'metric-value' + (pct >= 75 ? ' high' : pct >= 50 ? ' mid' : ' low');
+    } else {
+      el.className = 'metric-value' + (pct <= 25 ? ' high' : pct <= 50 ? ' mid' : ' low');
+    }
+  }
+
+  function escHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // ── keyboard shortcut: Ctrl/Cmd + Enter ──────────────────────────────────
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') runEval();
+  });
+</script>
+
+</body>
+</html>

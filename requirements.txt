@@ -4,6 +4,9 @@ tavily-python==0.8.5
 groq==1.7.0
 openai==3.29.0
 anthropic==1.13.0
+fastapi==0.143.1
+uvicorn[standard]==0.54.0
+python-multipart==0.0.32
 
 # Sub-dependencies pinned for reproducibility
 annotated-types==0.8.0

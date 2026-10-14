@@ -52,20 +52,28 @@ def _format_terminal_output(result: dict[str, Any]) -> str:
     summary = result.get("summary", {})
     cost_log = result.get("cost_log", {})
     score = summary.get("factuality_score", 0.0)
+    vp = summary.get("verifiable_precision")
+    vp_str = f"{vp * 100:.1f}%" if vp is not None else "N/A (0 verifiable claims)"
+    ur = summary.get("unverifiable_rate", 0.0)
+    ur_str = f"{ur * 100:.1f}%"
+    interpretation = summary.get("interpretation", "")
 
     lines.extend(
         [
             "-" * 64,
             "SUMMARY:",
-            f"  Total Claims:      {summary.get('total', 0)}",
-            f"  [✓] Supported:     {summary.get('supported', 0)}",
-            f"  [✗] Contradicted:  {summary.get('contradicted', 0)}",
-            f"  [?] Unsupported:   {summary.get('unsupported', 0)}",
-            f"  Factuality Score:  {score * 100:.1f}%",
+            f"  Total Claims:         {summary.get('total', 0)}",
+            f"  [✓] Supported:        {summary.get('supported', 0)}",
+            f"  [✗] Contradicted:     {summary.get('contradicted', 0)}",
+            f"  [?] Unsupported:      {summary.get('unsupported', 0)}",
+            f"  Factuality Score:     {score * 100:.1f}%",
+            f"  Verifiable Precision: {vp_str}",
+            f"  Unverifiable Rate:    {ur_str}",
+            f"  Interpretation:       {interpretation}",
             "",
             "COST LOG:",
-            f"  LLM Calls:         {cost_log.get('llm_calls', 0)}",
-            f"  Search Calls:      {cost_log.get('search_calls', 0)}",
+            f"  LLM Calls:            {cost_log.get('llm_calls', 0)}",
+            f"  Search Calls:         {cost_log.get('search_calls', 0)}",
             "=" * 64,
         ]
     )

@@ -23,12 +23,13 @@ def web_search(query: str, max_results: int = 5) -> list[dict]:
 
     results: list[dict] = []
     for item in raw_results:
-        snippet = item.get("content") or item.get("snippet") or ""
+        raw_text = str(item.get("snippet") or item.get("content") or "")
+        snippet = (raw_text[:400] + "...") if len(raw_text) > 400 else raw_text
         results.append(
             {
                 "title": str(item.get("title", "")),
                 "url": str(item.get("url", "")),
-                "snippet": str(snippet),
+                "snippet": snippet,
             }
         )
     return results
