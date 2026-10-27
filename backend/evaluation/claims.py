@@ -32,6 +32,27 @@ def _clean_and_parse_claims_json(raw_text: str) -> list[str]:
         else:
             raise ValueError(f"Could not locate JSON array in response: {cleaned[:120]}...")
 
+    if isinstance(data, dict):
+        for candidate_key in ["claims", "extracted_claims", "atomic_claims", "assertions", "items", "data"]:
+            if candidate_key in data and isinstance(data[candidate_key], list):
+                data = data[candidate_key]
+                break
+        else:
+            for val in data.values():
+                if isinstance(val, list):
+                    data = val
+                    break
+            else:
+                # Local LLMs in JSON object mode may return {"claim_1": "text...", "claim_2": "text..."}
+                claims_from_dict: list[str] = []
+                for k, v in data.items():
+                    if isinstance(v, str) and len(v.strip()) > 3:
+                        claims_from_dict.append(v.strip())
+                    elif isinstance(k, str) and len(k.strip()) > 3 and not k.startswith("claim"):
+                        claims_from_dict.append(k.strip())
+                if claims_from_dict:
+                    data = claims_from_dict
+
     if not isinstance(data, list):
         raise ValueError(f"Expected JSON array, got {type(data).__name__}")
 
@@ -42,6 +63,8 @@ def _clean_and_parse_claims_json(raw_text: str) -> list[str]:
         elif isinstance(item, dict) and "claim" in item:
             # Handle potential dict element fallback gracefully
             claims.append(str(item["claim"]).strip())
+        elif isinstance(item, dict) and "text" in item:
+            claims.append(str(item["text"]).strip())
 
     return claims
 

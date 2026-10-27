@@ -1,0 +1,94 @@
+{
+  "benchmark": "Vishwas AI Gold Benchmark",
+  "timestamp": "2026-10-27T23:07:37.416771",
+  "model": "qwen2.5:7b",
+  "provider": "ollama",
+  "hardware": {
+    "os": "Windows 11 Home 64-bit",
+    "cpu": "AMD Ryzen 7 250 w/ Radeon 780M Graphics (8 Cores, 16 Threads)",
+    "ram_gb": 24,
+    "gpu": "NVIDIA GeForce RTX 5050 Laptop GPU (4 GB VRAM)"
+  },
+  "settings": {
+    "temperature": 0.0,
+    "retrieval": true,
+    "max_search_results": 3
+  },
+  "metrics": {
+    "total_cases": 1,
+    "total_gold_claims": 3,
+    "total_matched_claims": 2,
+    "claim_extraction_recall": 66.67,
+    "missed_gold_claims": 1,
+    "status_agreed": 2,
+    "status_disagreed": 0,
+    "verification_accuracy": 100.0,
+    "end_to_end_accuracy": 66.67,
+    "total_latency_seconds": 0.02,
+    "avg_latency_per_case_seconds": 0.02,
+    "category_stats": {
+      "correct": {
+        "gold": 3,
+        "matched": 2,
+        "agreed": 2,
+        "disagreed": 0,
+        "missed": 1
+      }
+    }
+  },
+  "cases": [
+    {
+      "case_id": 1,
+      "category": "correct",
+      "question": "Who discovered penicillin and when?",
+      "answer": "Alexander Fleming discovered penicillin in 1928 at St. Mary's Hospital in London. He shared the Nobel Prize in Physiology or Medicine in 1945 for this breakthrough.",
+      "gold_claims": [
+        {
+          "text": "Alexander Fleming discovered penicillin in 1928.",
+          "label": "supported"
+        },
+        {
+          "text": "Alexander Fleming discovered penicillin at St. Mary's Hospital in London.",
+          "label": "supported"
+        },
+        {
+          "text": "Alexander Fleming shared the Nobel Prize in Physiology or Medicine in 1945.",
+          "label": "supported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Alexander Fleming discovered penicillin in 1928.",
+          "status": "supported",
+          "reasoning": "The evidence snippets explicitly state that Alexander Fleming discovered penicillin in 1928 while working at St Mary's Hospital in London. Snippet [1] and [3] directly confirm the year and location, while snippet [2] confirms the discovery of penicillin and its significance.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Discovery_of_penicillin",
+            "https://en.wikipedia.org/wiki/Alexander_Fleming",
+            "https://en.wikipedia.org/wiki/St_Mary%27s_Hospital%2C_London"
+          ]
+        },
+        {
+          "text": "Alexander Fleming shared the Nobel Prize in Physiology or Medicine in 1945.",
+          "status": "supported",
+          "reasoning": "Snippet from the 'Alexander Fleming' Wikipedia page directly states that Alexander Fleming shared the 1945 Nobel Prize in Physiology or Medicine.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Alexander_Fleming"
+          ]
+        }
+      ],
+      "agreements": [
+        "\u2713 'Alexander Fleming discovered penicillin in 1928.' -> status: supported",
+        "\u2713 'Alexander Fleming shared the Nobel Prize in Physiology or Medicine in 1945.' -> status: supported"
+      ],
+      "disagreements": [],
+      "missed_claims": [
+        "\u2022 Missed gold claim: 'Alexander Fleming discovered penicillin at St. Mary's Hospital in London.' (Gold: supported)"
+      ],
+      "latency_seconds": 0.02,
+      "cost_log": {
+        "llm_calls": 3,
+        "search_calls": 2
+      }
+    }
+  ]
+}

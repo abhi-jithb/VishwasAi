@@ -30,3 +30,9 @@ htmlcov/
 .idea/
 *.swp
 *.swo
+
+# Databases & local caches
+*.db
+*.sqlite
+*.sqlite3
+
