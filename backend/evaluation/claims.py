@@ -73,6 +73,7 @@ def extract_claims(
     question: str,
     answer: str,
     cost_tracker: dict[str, int] | None = None,
+    trace: dict[str, Any] | None = None,
 ) -> list[str]:
     """Decompose an answer into atomic, self-contained factual claims.
 
@@ -80,6 +81,7 @@ def extract_claims(
         question: The source question or context prompt.
         answer: The text to audit.
         cost_tracker: Optional dictionary to increment 'llm_calls'.
+        trace: Optional dictionary to capture intermediate inspection data.
 
     Returns:
         List of atomic claim strings.
@@ -108,8 +110,16 @@ def extract_claims(
     except Exception as exc:
         raise RuntimeError(f"LLM communication error during claim extraction: {exc}") from exc
 
+    if trace is not None:
+        trace["system_prompt"] = EXTRACT_CLAIMS_SYSTEM_PROMPT
+        trace["user_prompt"] = user_prompt
+        trace["raw_response"] = raw_response
+
     try:
-        return _clean_and_parse_claims_json(raw_response)
+        claims = _clean_and_parse_claims_json(raw_response)
+        if trace is not None:
+            trace["claims"] = claims
+        return claims
     except Exception as first_error:
         # Retry once with stricter prompt
         retry_prompt = EXTRACT_CLAIMS_RETRY_PROMPT_TEMPLATE.format(

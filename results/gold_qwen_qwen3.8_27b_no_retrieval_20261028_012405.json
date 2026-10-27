@@ -1,0 +1,324 @@
+{
+  "benchmark": "Vishwas AI Gold Benchmark",
+  "timestamp": "2026-10-28T01:24:05.534639",
+  "model": "qwen/qwen3.8-27b",
+  "provider": "groq",
+  "hardware": {
+    "os": "Linux 7.2.11-100.fc43.x86_64 (x86_64)",
+    "cpu": "x86_64",
+    "ram_gb": 16,
+    "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU, 4096 MiB"
+  },
+  "settings": {
+    "temperature": 0.0,
+    "retrieval": false,
+    "max_search_results": 0
+  },
+  "metrics": {
+    "total_cases": 5,
+    "total_gold_claims": 16,
+    "total_matched_claims": 16,
+    "claim_extraction_recall": 100.0,
+    "missed_gold_claims": 0,
+    "status_agreed": 16,
+    "status_disagreed": 0,
+    "verification_accuracy": 100.0,
+    "end_to_end_accuracy": 100.0,
+    "total_latency_seconds": 21.79,
+    "avg_latency_per_case_seconds": 4.36,
+    "category_stats": {
+      "correct": {
+        "gold": 16,
+        "matched": 16,
+        "agreed": 16,
+        "disagreed": 0,
+        "missed": 0
+      }
+    }
+  },
+  "cases": [
+    {
+      "case_id": 1,
+      "category": "correct",
+      "question": "Who discovered penicillin and when?",
+      "answer": "Alexander Fleming discovered penicillin in 1928 at St. Mary's Hospital in London. He shared the Nobel Prize in Physiology or Medicine in 1945 for this breakthrough.",
+      "gold_claims": [
+        {
+          "text": "Alexander Fleming discovered penicillin in 1928.",
+          "label": "supported"
+        },
+        {
+          "text": "Alexander Fleming discovered penicillin at St. Mary's Hospital in London.",
+          "label": "supported"
+        },
+        {
+          "text": "Alexander Fleming shared the Nobel Prize in Physiology or Medicine in 1945.",
+          "label": "supported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Alexander Fleming discovered penicillin in 1928.",
+          "status": "supported",
+          "reasoning": "Alexander Fleming observed the antibacterial effect of mold (Penicillium notatum) in 1928, which led to the discovery of penicillin.",
+          "sources": []
+        },
+        {
+          "text": "Alexander Fleming discovered penicillin at St. Mary's Hospital in London.",
+          "status": "supported",
+          "reasoning": "Alexander Fleming is widely credited with discovering penicillin in 1928. He made this discovery while working at St. Mary's Hospital in London, where he observed the antibacterial properties of the Penicillium mold.",
+          "sources": []
+        },
+        {
+          "text": "Alexander Fleming shared the Nobel Prize in Physiology or Medicine in 1945.",
+          "status": "supported",
+          "reasoning": "Alexander Fleming, along with Ernst Boris Chain and Howard Florey, was awarded the Nobel Prize in Physiology or Medicine in 1945 for the discovery of penicillin and its curative effects in various infectious diseases.",
+          "sources": []
+        },
+        {
+          "text": "The Nobel Prize in Physiology or Medicine was awarded to Alexander Fleming in 1945 for the discovery of penicillin.",
+          "status": "contradicted",
+          "reasoning": "The Nobel Prize in Physiology or Medicine in 1945 was awarded jointly to Alexander Fleming, Howard Florey, and Ernst Chain for their work on penicillin, not solely to Fleming.",
+          "sources": []
+        }
+      ],
+      "agreements": [
+        "\u2713 'Alexander Fleming discovered penicillin in 1928.' -> status: supported",
+        "\u2713 'Alexander Fleming discovered penicillin at St. Mary's Hospital in London.' -> status: supported",
+        "\u2713 'Alexander Fleming shared the Nobel Prize in Physiology or Medicine in 1945.' -> status: supported"
+      ],
+      "disagreements": [],
+      "missed_claims": [],
+      "latency_seconds": 6.34,
+      "cost_log": {
+        "llm_calls": 5,
+        "search_calls": 0
+      }
+    },
+    {
+      "case_id": 2,
+      "category": "correct",
+      "question": "What happened during the Apollo 11 mission?",
+      "answer": "The Apollo 11 mission landed on the Moon in July 1969. Neil Armstrong and Buzz Aldrin walked on the lunar surface, while Michael Collins orbited in the command module.",
+      "gold_claims": [
+        {
+          "text": "The Apollo 11 mission landed on the Moon in July 1969.",
+          "label": "supported"
+        },
+        {
+          "text": "Neil Armstrong walked on the lunar surface.",
+          "label": "supported"
+        },
+        {
+          "text": "Buzz Aldrin walked on the lunar surface.",
+          "label": "supported"
+        },
+        {
+          "text": "Michael Collins orbited in the command module during the Apollo 11 mission.",
+          "label": "supported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Apollo 11 mission landed on the Moon in July 1969.",
+          "status": "supported",
+          "reasoning": "Apollo 11 landed on the Moon on July 20, 1969, which is within July 1969.",
+          "sources": []
+        },
+        {
+          "text": "Neil Armstrong walked on the lunar surface.",
+          "status": "supported",
+          "reasoning": "Neil Armstrong was the first human to walk on the Moon, stepping onto the lunar surface on July 20, 1969, during the Apollo 11 mission.",
+          "sources": []
+        },
+        {
+          "text": "Buzz Aldrin walked on the lunar surface.",
+          "status": "supported",
+          "reasoning": "Buzz Aldrin was the second human to walk on the Moon during the Apollo 11 mission in 1969.",
+          "sources": []
+        },
+        {
+          "text": "Michael Collins orbited in the command module.",
+          "status": "supported",
+          "reasoning": "Michael Collins served as the command module pilot on Apollo 11 and remained in the command module orbiting the Moon while Neil Armstrong and Buzz Aldrin performed the lunar surface EVA.",
+          "sources": []
+        }
+      ],
+      "agreements": [
+        "\u2713 'The Apollo 11 mission landed on the Moon in July 1969.' -> status: supported",
+        "\u2713 'Neil Armstrong walked on the lunar surface.' -> status: supported",
+        "\u2713 'Buzz Aldrin walked on the lunar surface.' -> status: supported",
+        "\u2713 'Michael Collins orbited in the command module during the Apollo 11 mission.' -> status: supported"
+      ],
+      "disagreements": [],
+      "missed_claims": [],
+      "latency_seconds": 5.53,
+      "cost_log": {
+        "llm_calls": 5,
+        "search_calls": 0
+      }
+    },
+    {
+      "case_id": 3,
+      "category": "correct",
+      "question": "How was the structure of DNA discovered?",
+      "answer": "James Watson and Francis Crick proposed the double-helix structure of DNA in 1953. Their discovery relied on X-ray diffraction images taken by Rosalind Franklin.",
+      "gold_claims": [
+        {
+          "text": "James Watson and Francis Crick proposed the double-helix structure of DNA in 1953.",
+          "label": "supported"
+        },
+        {
+          "text": "Rosalind Franklin took X-ray diffraction images of DNA.",
+          "label": "supported"
+        },
+        {
+          "text": "James Watson and Francis Crick's discovery relied on Rosalind Franklin's X-ray diffraction images.",
+          "label": "supported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "James Watson proposed the double-helix structure of DNA in 1953.",
+          "status": "supported",
+          "reasoning": "James Watson, along with Francis Crick, published the paper describing the double-helix structure of DNA in Nature in 1953. While Rosalind Franklin and Maurice Wilkins provided critical experimental data, Watson and Crick are credited with proposing the specific structural model.",
+          "sources": []
+        },
+        {
+          "text": "Francis Crick proposed the double-helix structure of DNA in 1953.",
+          "status": "supported",
+          "reasoning": "Francis Crick, along with James Watson, proposed the double-helix structure of DNA in 1953. Their model was published in Nature in April 1953, and they were later awarded the Nobel Prize in Physiology or Medicine in 1962 for this discovery.",
+          "sources": []
+        },
+        {
+          "text": "Rosalind Franklin took X-ray diffraction images of DNA.",
+          "status": "supported",
+          "reasoning": "Rosalind Franklin was a physical chemist and X-ray crystallographer who, along with Raymond Gosling, produced high-quality X-ray diffraction images of DNA at King's College London. Her most famous image, known as Photo 51, was critical in determining the double-helix structure of DNA.",
+          "sources": []
+        },
+        {
+          "text": "The discovery of the double-helix structure of DNA by James Watson and Francis Crick relied on X-ray diffraction images taken by Rosalind Franklin.",
+          "status": "supported",
+          "reasoning": "Watson and Crick used Rosalind Franklin\u2019s X\u2011ray diffraction data, notably Photo 51, as a key piece of evidence in determining the double\u2011helix structure of DNA.",
+          "sources": []
+        }
+      ],
+      "agreements": [
+        "\u2713 'James Watson and Francis Crick proposed the double-helix structure of DNA in 1953.' -> status: supported",
+        "\u2713 'Rosalind Franklin took X-ray diffraction images of DNA.' -> status: supported",
+        "\u2713 'James Watson and Francis Crick's discovery relied on Rosalind Franklin's X-ray diffraction images.' -> status: supported"
+      ],
+      "disagreements": [],
+      "missed_claims": [],
+      "latency_seconds": 5.43,
+      "cost_log": {
+        "llm_calls": 5,
+        "search_calls": 0
+      }
+    },
+    {
+      "case_id": 4,
+      "category": "correct",
+      "question": "Who created the Python programming language?",
+      "answer": "Guido van Rossum created the Python programming language, which was first released in 1991. The language was named after the British comedy group Monty Python.",
+      "gold_claims": [
+        {
+          "text": "Guido van Rossum created the Python programming language.",
+          "label": "supported"
+        },
+        {
+          "text": "Python was first released in 1991.",
+          "label": "supported"
+        },
+        {
+          "text": "Python was named after the comedy group Monty Python.",
+          "label": "supported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Guido van Rossum created the Python programming language.",
+          "status": "supported",
+          "reasoning": "Guido van Rossum is the original author of the Python programming language. He began developing Python in the late 1980s as a successor to the ABC language and released the first version in 1991.",
+          "sources": []
+        },
+        {
+          "text": "The Python programming language was first released in 1991.",
+          "status": "supported",
+          "reasoning": "Python was first released in 1991 (Python 0.9.0).",
+          "sources": []
+        },
+        {
+          "text": "The Python programming language was named after the British comedy group Monty Python.",
+          "status": "supported",
+          "reasoning": "Guido van Rossum, the creator of Python, has explicitly stated that the language was named after the British comedy group Monty Python, not the snake. He was a fan of the show and wanted a name that was short, unique, and slightly mysterious.",
+          "sources": []
+        }
+      ],
+      "agreements": [
+        "\u2713 'Guido van Rossum created the Python programming language.' -> status: supported",
+        "\u2713 'Python was first released in 1991.' -> status: supported",
+        "\u2713 'Python was named after the comedy group Monty Python.' -> status: supported"
+      ],
+      "disagreements": [],
+      "missed_claims": [],
+      "latency_seconds": 2.48,
+      "cost_log": {
+        "llm_calls": 4,
+        "search_calls": 0
+      }
+    },
+    {
+      "case_id": 5,
+      "category": "correct",
+      "question": "When was Albert Einstein's general theory of relativity confirmed?",
+      "answer": "Albert Einstein published his general theory of relativity in 1915. In 1919, Sir Arthur Eddington measured the deflection of starlight during a solar eclipse, confirming Einstein's predictions.",
+      "gold_claims": [
+        {
+          "text": "Albert Einstein published the general theory of relativity in 1915.",
+          "label": "supported"
+        },
+        {
+          "text": "Sir Arthur Eddington measured the deflection of starlight during a solar eclipse in 1919.",
+          "label": "supported"
+        },
+        {
+          "text": "Arthur Eddington's 1919 observations confirmed Albert Einstein's predictions of general relativity.",
+          "label": "supported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Albert Einstein published his general theory of relativity in 1915.",
+          "status": "supported",
+          "reasoning": "Albert Einstein presented the final field equations of the general theory of relativity to the Prussian Academy of Sciences on November 25, 1915. The complete paper was published in 1916, but the theory is historically and scientifically attributed to 1915 as the year of its completion and presentation.",
+          "sources": []
+        },
+        {
+          "text": "Sir Arthur Eddington measured the deflection of starlight during a solar eclipse in 1919.",
+          "status": "supported",
+          "reasoning": "Sir Arthur Eddington led the 1919 solar eclipse expeditions to Sobral, Brazil, and Pr\u00edncipe, off the coast of Africa, to measure the deflection of starlight by the Sun's gravity. The results confirmed Albert Einstein's prediction from General Relativity, making Eddington a famous figure in the history of science.",
+          "sources": []
+        },
+        {
+          "text": "Sir Arthur Eddington's 1919 measurement confirmed Albert Einstein's predictions.",
+          "status": "supported",
+          "reasoning": "The 1919 solar eclipse expedition, led by Arthur Eddington, measured the deflection of starlight by the Sun's gravity. The results were consistent with Albert Einstein's General Theory of Relativity (which predicted a deflection of approximately 1.75 arcseconds) and inconsistent with Newtonian physics (which predicted half that amount). This event is historically recognized as the first major experimental confirmation of Einstein's theory.",
+          "sources": []
+        }
+      ],
+      "agreements": [
+        "\u2713 'Albert Einstein published the general theory of relativity in 1915.' -> status: supported",
+        "\u2713 'Sir Arthur Eddington measured the deflection of starlight during a solar eclipse in 1919.' -> status: supported",
+        "\u2713 'Arthur Eddington's 1919 observations confirmed Albert Einstein's predictions of general relativity.' -> status: supported"
+      ],
+      "disagreements": [],
+      "missed_claims": [],
+      "latency_seconds": 2.0,
+      "cost_log": {
+        "llm_calls": 4,
+        "search_calls": 0
+      }
+    }
+  ]
+}

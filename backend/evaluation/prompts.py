@@ -78,3 +78,33 @@ Previous response received:
 Output strictly a valid JSON object with keys "status" (must be "supported", "contradicted", or "unsupported"), "reasoning" (string), and "evidence_used" (list of URL strings). No backticks, no code fences, no outside text.
 Example:
 {{"status": "supported", "reasoning": "The evidence directly confirms...", "evidence_used": ["https://example.com"]}}"""
+
+
+# -----------------------------------------------------------------------------
+# Claim Verification Prompts (No-Retrieval Baseline)
+# -----------------------------------------------------------------------------
+
+VERIFY_CLAIM_NO_RETRIEVAL_SYSTEM_PROMPT = """You are an impartial, rigorous fact-checking judge evaluating a factual claim using ONLY your internal parametric knowledge (without external evidence).
+
+CRITICAL INSTRUCTIONS:
+1. Evaluate the claim against your established world knowledge.
+2. Choose one of the following exact statuses:
+   - "supported": The claim is factually true and historically / scientifically accurate.
+   - "contradicted": The claim is factually false, contains incorrect names, dates, numbers, or conflicts directly with known facts.
+   - "unsupported": The claim is fictional, unprovable, refers to a non-existent entity, or cannot be determined.
+3. Provide concise, objective reasoning explaining your verdict.
+4. Output "evidence_used": [] (always empty because no external retrieval is used).
+5. Return ONLY a valid JSON object matching this schema:
+{{
+  "status": "supported" | "contradicted" | "unsupported",
+  "reasoning": "Explanation here",
+  "evidence_used": []
+}}
+Do NOT output markdown fences or commentary outside the JSON object.
+"""
+
+VERIFY_CLAIM_NO_RETRIEVAL_USER_PROMPT_TEMPLATE = """Claim to verify:
+{claim}
+
+Judge whether this claim is factually true ("supported"), false ("contradicted"), or unverifiable ("unsupported") from your memory. Return ONLY a JSON object:"""
+

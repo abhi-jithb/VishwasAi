@@ -6,6 +6,8 @@ from typing import Any
 
 from backend.llm import call_llm
 from backend.evaluation.prompts import (
+    VERIFY_CLAIM_NO_RETRIEVAL_SYSTEM_PROMPT,
+    VERIFY_CLAIM_NO_RETRIEVAL_USER_PROMPT_TEMPLATE,
     VERIFY_CLAIM_RETRY_PROMPT_TEMPLATE,
     VERIFY_CLAIM_SYSTEM_PROMPT,
     VERIFY_CLAIM_USER_PROMPT_TEMPLATE,
@@ -92,13 +94,17 @@ def verify_claim(
     claim: str,
     evidence: list[dict[str, str]],
     cost_tracker: dict[str, int] | None = None,
+    retrieval: bool = True,
+    trace: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Judge a claim strictly against provided evidence snippets.
+    """Judge a claim against provided evidence snippets (or internal memory if retrieval=False).
 
     Args:
         claim: The atomic factual claim to verify.
         evidence: List of evidence items with 'title', 'url', and 'snippet'.
         cost_tracker: Optional dictionary to increment 'llm_calls'.
+        retrieval: If True, judge strictly using evidence. If False, judge from model memory.
+        trace: Optional dictionary to capture intermediate inspection data.
 
     Returns:
         Dict with keys:
@@ -110,33 +116,51 @@ def verify_claim(
         RuntimeError: If LLM call fails.
         ValueError: If response cannot be parsed into required JSON after retry.
     """
-    # If evidence is empty, return unsupported without calling the LLM
-    if not evidence:
-        return {
-            "status": "unsupported",
-            "reasoning": "No relevant search evidence was found for this claim.",
-            "evidence_used": [],
-        }
+    if retrieval:
+        # If retrieval is enabled and evidence is empty, return unsupported without calling the LLM
+        if not evidence:
+            result = {
+                "status": "unsupported",
+                "reasoning": "No relevant search evidence was found for this claim.",
+                "evidence_used": [],
+            }
+            if trace is not None:
+                trace["system_prompt"] = VERIFY_CLAIM_SYSTEM_PROMPT
+                trace["user_prompt"] = "(Search returned 0 results; verification skipped)"
+                trace["raw_response"] = json.dumps(result)
+            return result
 
-    evidence_text = _format_evidence_snippets(evidence)
-    available_urls = {item.get("url", "").strip() for item in evidence if item.get("url")}
-
-    user_prompt = VERIFY_CLAIM_USER_PROMPT_TEMPLATE.format(
-        claim=claim.strip(),
-        evidence_text=evidence_text,
-    )
+        evidence_text = _format_evidence_snippets(evidence)
+        available_urls = {item.get("url", "").strip() for item in evidence if item.get("url")}
+        system_prompt = VERIFY_CLAIM_SYSTEM_PROMPT
+        user_prompt = VERIFY_CLAIM_USER_PROMPT_TEMPLATE.format(
+            claim=claim.strip(),
+            evidence_text=evidence_text,
+        )
+    else:
+        # No-retrieval baseline: judge strictly using internal parametric memory
+        available_urls = set()
+        system_prompt = VERIFY_CLAIM_NO_RETRIEVAL_SYSTEM_PROMPT
+        user_prompt = VERIFY_CLAIM_NO_RETRIEVAL_USER_PROMPT_TEMPLATE.format(
+            claim=claim.strip(),
+        )
 
     if cost_tracker is not None:
         cost_tracker["llm_calls"] = cost_tracker.get("llm_calls", 0) + 1
 
     try:
         raw_response = call_llm(
-            system=VERIFY_CLAIM_SYSTEM_PROMPT,
+            system=system_prompt,
             user=user_prompt,
             temperature=0.0,
         )
     except Exception as exc:
         raise RuntimeError(f"LLM communication error during claim verification: {exc}") from exc
+
+    if trace is not None:
+        trace["system_prompt"] = system_prompt
+        trace["user_prompt"] = user_prompt
+        trace["raw_response"] = raw_response
 
     try:
         return _clean_and_parse_verification_json(raw_response, available_urls)
@@ -151,10 +175,13 @@ def verify_claim(
 
         try:
             retry_response = call_llm(
-                system=VERIFY_CLAIM_SYSTEM_PROMPT,
+                system=system_prompt,
                 user=retry_prompt,
                 temperature=0.0,
             )
+            if trace is not None:
+                trace["retry_prompt"] = retry_prompt
+                trace["raw_response"] = retry_response
             return _clean_and_parse_verification_json(retry_response, available_urls)
         except Exception as retry_error:
             raise ValueError(

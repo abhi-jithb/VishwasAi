@@ -468,6 +468,16 @@
       <textarea id="answer" rows="6" placeholder="Paste the LLM answer you want to audit…"></textarea>
       <div class="char-count" id="char-count">0 / 3000</div>
     </div>
+    <div class="form-options" style="display:flex;gap:24px;margin-bottom:16px;font-size:0.85rem;color:var(--text-muted);">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <input type="checkbox" id="retrieval-toggle" checked style="accent-color:var(--accent);width:16px;height:16px;" />
+        <span>Web Retrieval Evidence</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <input type="checkbox" id="inspect-toggle" checked style="accent-color:var(--accent);width:16px;height:16px;" />
+        <span>Inspector Mode (Live Pipeline Trace)</span>
+      </label>
+    </div>
     <div class="form-actions">
       <button class="btn btn-primary" id="check-btn" onclick="runEval()">
         <span id="btn-label">Check</span>
@@ -521,6 +531,16 @@
     <div class="section-title" id="claims-title">Claims</div>
     <div id="claims-list"></div>
 
+    <!-- Inspector Panel (Collapsible) -->
+    <div id="inspector-container" style="display:none;margin-top:28px;">
+      <details style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:14px 18px;">
+        <summary style="font-weight:600;font-size:0.9rem;color:var(--accent);cursor:pointer;user-select:none;display:flex;align-items:center;gap:8px;">
+          🔬 Live Pipeline Inspector Trace (Raw Prompts, Snippets & LLM Outputs)
+        </summary>
+        <div id="inspector-content" style="margin-top:16px;font-size:0.82rem;font-family:'JetBrains Mono',monospace;"></div>
+      </details>
+    </div>
+
     <div class="cost-log" id="cost-log"></div>
   </div>
 </main>
@@ -551,6 +571,8 @@
   async function runEval() {
     const question = document.getElementById('question').value.trim();
     const answer   = document.getElementById('answer').value.trim();
+    const retrieval = document.getElementById('retrieval-toggle').checked;
+    const inspect   = document.getElementById('inspect-toggle').checked;
 
     // Client-side validation
     setError('');
@@ -564,7 +586,7 @@
       const res = await fetch('/api/evaluate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question, answer }),
+        body: JSON.stringify({ question, answer, retrieval, inspect }),
       });
       const data = await res.json();
       if (!res.ok || data.error) {
@@ -659,6 +681,49 @@
     // Cost log
     document.getElementById('cost-log').innerHTML =
       `LLM calls: <span>${costLog.llm_calls ?? '—'}</span>&ensp;|&ensp;Search calls: <span>${costLog.search_calls ?? '—'}</span>`;
+
+    // Inspector trace rendering
+    const inspBox = document.getElementById('inspector-container');
+    const inspContent = document.getElementById('inspector-content');
+    if (data.inspection) {
+      const ins = data.inspection;
+      let html = `
+        <div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);">
+          <span style="color:var(--text-muted);">Mode:</span> <span style="color:var(--accent);">${ins.retrieval ? 'Web Retrieval (Tavily/DDG/Wiki)' : 'Parametric Memory Baseline'}</span>
+        </div>
+        <div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);">
+          <div style="font-weight:600;color:var(--text);margin-bottom:4px;">[Stage 2: Claim Extraction Prompt & Output]</div>
+          <div style="color:var(--text-dim);margin-bottom:2px;">User Prompt:</div>
+          <pre style="background:var(--bg);padding:8px;border-radius:4px;overflow-x:auto;color:var(--text-muted);">${escHtml(ins.extraction?.user_prompt || '')}</pre>
+          <div style="color:var(--text-dim);margin:6px 0 2px;">Raw LLM Response:</div>
+          <pre style="background:var(--bg);padding:8px;border-radius:4px;overflow-x:auto;color:var(--green);">${escHtml(ins.extraction?.raw_response || '')}</pre>
+        </div>
+        <div>
+          <div style="font-weight:600;color:var(--text);margin-bottom:8px;">[Stage 3: Per-Claim Evidence & Judge Trace]</div>`;
+
+      (ins.claims || []).forEach((c, idx) => {
+        html += `
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:12px;margin-bottom:12px;">
+            <div style="font-weight:600;color:var(--accent);margin-bottom:6px;">Claim #${idx + 1}: "${escHtml(c.claim)}"</div>
+            <div style="color:var(--text-dim);font-size:0.75rem;">Derived Search Query: <span style="color:var(--text);">${escHtml(c.search_query)}</span></div>
+            <div style="color:var(--text-dim);font-size:0.75rem;margin-top:4px;">Retrieved Snippets (${(c.snippets || []).length}):</div>
+            <div style="margin:4px 0 8px;padding-left:10px;border-left:2px solid var(--border2);font-size:0.75rem;">
+              ${(c.snippets || []).map((s, s_idx) => `<div>[${s_idx + 1}] <b>${escHtml(s.title || '')}</b>: ${escHtml(s.snippet || '')}</div>`).join('') || '<div style="color:var(--text-dim);">(None)</div>'}
+            </div>
+            <div style="color:var(--text-dim);font-size:0.75rem;">Judge Prompt Sent:</div>
+            <pre style="background:var(--bg);padding:6px;border-radius:4px;font-size:0.72rem;overflow-x:auto;color:var(--text-muted);">${escHtml(c.judge_user_prompt || '')}</pre>
+            <div style="color:var(--text-dim);font-size:0.75rem;margin-top:6px;">Judge Raw Output:</div>
+            <pre style="background:var(--bg);padding:6px;border-radius:4px;font-size:0.72rem;overflow-x:auto;color:${c.status === 'supported' ? 'var(--green)' : c.status === 'contradicted' ? 'var(--red)' : 'var(--yellow)'};">${escHtml(c.judge_raw_output || '')}</pre>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+      inspContent.innerHTML = html;
+      inspBox.style.display = 'block';
+    } else {
+      inspBox.style.display = 'none';
+    }
 
     document.getElementById('results').style.display = 'block';
     document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });

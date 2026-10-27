@@ -23,6 +23,7 @@ def gather_evidence(
     claim: str,
     max_results: int = 5,
     cost_tracker: dict[str, int] | None = None,
+    trace: dict[str, Any] | None = None,
 ) -> list[dict[str, str]]:
     """Gather web search evidence for a factual claim.
 
@@ -30,6 +31,7 @@ def gather_evidence(
         claim: The factual claim string.
         max_results: Maximum search results to retrieve (default: 5).
         cost_tracker: Optional dictionary to increment 'search_calls'.
+        trace: Optional dictionary to capture intermediate inspection data.
 
     Returns:
         List of evidence dicts with 'title', 'url', and 'snippet'.
@@ -42,6 +44,9 @@ def gather_evidence(
 
     query = _derive_search_query(claim)
 
+    if trace is not None:
+        trace["search_query"] = query
+
     if cost_tracker is not None:
         cost_tracker["search_calls"] = cost_tracker.get("search_calls", 0) + 1
 
@@ -51,6 +56,8 @@ def gather_evidence(
     for attempt in range(max_retries):
         try:
             results = web_search(query=query, max_results=max_results)
+            if trace is not None:
+                trace["results"] = results
             return results
         except Exception as exc:
             last_exc = exc

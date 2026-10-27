@@ -43,8 +43,37 @@ def _claim_similarity(s1: str, s2: str) -> float:
     return 0.4 * jaccard + 0.6 * overlap
 
 
+def _detect_system_hardware() -> dict[str, Any]:
+    """Detect local runtime hardware specifications."""
+    import platform
+    hw = {
+        "os": f"{platform.system()} {platform.release()} ({platform.machine()})",
+        "cpu": platform.processor() or platform.machine(),
+        "ram_gb": 16,
+        "gpu": "CPU / Integrated",
+    }
+    try:
+        import psutil
+        hw["ram_gb"] = round(psutil.virtual_memory().total / (1024 ** 3))
+    except Exception:
+        pass
+    try:
+        import subprocess
+        gpu_info = subprocess.check_output(
+            ["nvidia-smi", "--query-gpu=name,memory.total", "--format=csv,noheader"],
+            text=True,
+            timeout=2.0,
+        ).strip()
+        if gpu_info:
+            hw["gpu"] = gpu_info.split("\n")[0]
+    except Exception:
+        pass
+    return hw
+
+
 def run_gold_evaluation(
     limit: int | None = None,
+    retrieval: bool = True,
     save_results: bool = True,
     output_path: str | None = None,
 ) -> dict[str, Any]:
@@ -62,10 +91,11 @@ def run_gold_evaluation(
 
     model_name = get_active_model()
     provider_name = get_active_provider()
+    mode_label = "WITH RETRIEVAL" if retrieval else "NO-RETRIEVAL BASELINE (MEMORY ONLY)"
 
     print("=" * 80)
     print(f"RUNNING VISHWAS AI GOLD BENCHMARK ({len(test_cases)} CASES)")
-    print(f"Model: {model_name} | Provider: {provider_name}")
+    print(f"Model: {model_name} | Provider: {provider_name} | Mode: {mode_label}")
     print("=" * 80)
 
     total_gold_claims = 0
@@ -101,7 +131,7 @@ def run_gold_evaluation(
         # Run pipeline evaluation with per-case latency timing
         case_t0 = time.time()
         try:
-            eval_result = evaluate(question=question, answer=answer)
+            eval_result = evaluate(question=question, answer=answer, retrieval=retrieval)
             extracted = eval_result.get("claims", [])
             cost_log = eval_result.get("cost_log", {})
         except Exception as exc:
@@ -242,16 +272,11 @@ def run_gold_evaluation(
         "timestamp": now_iso,
         "model": model_name,
         "provider": provider_name,
-        "hardware": {
-            "os": "Windows 11 Home 64-bit",
-            "cpu": "AMD Ryzen 7 250 w/ Radeon 780M Graphics (8 Cores, 16 Threads)",
-            "ram_gb": 24,
-            "gpu": "NVIDIA GeForce RTX 5050 Laptop GPU (4 GB VRAM)",
-        },
+        "hardware": _detect_system_hardware(),
         "settings": {
             "temperature": 0.0,
-            "retrieval": True,
-            "max_search_results": 3,
+            "retrieval": retrieval,
+            "max_search_results": 3 if retrieval else 0,
         },
         "metrics": {
             "total_cases": len(test_cases),
@@ -273,10 +298,11 @@ def run_gold_evaluation(
     if save_results:
         results_dir = root_dir / "results"
         results_dir.mkdir(parents=True, exist_ok=True)
+        retrieval_tag = "" if retrieval else "_no_retrieval"
         if output_path:
             save_file = Path(output_path)
         else:
-            save_file = results_dir / f"gold_{model_slug}_{clean_timestamp}.json"
+            save_file = results_dir / f"gold_{model_slug}{retrieval_tag}_{clean_timestamp}.json"
         with open(save_file, "w", encoding="utf-8") as f:
             json.dump(benchmark_record, f, indent=2)
         print(f"\n[SAVED] Benchmark results saved to: {save_file}")
@@ -290,6 +316,7 @@ def main() -> None:
     parser.add_argument("--limit", type=int, default=None, help="Limit number of test cases to run")
     parser.add_argument("--model", type=str, default=None, help="Override LLM model name")
     parser.add_argument("--provider", type=str, default=None, help="Override LLM provider (e.g. ollama, groq)")
+    parser.add_argument("--no-retrieval", action="store_true", help="Run no-retrieval baseline (parametric memory only)")
     parser.add_argument("--output", type=str, default=None, help="Specific JSON file to save results")
     parser.add_argument("--no-save", action="store_true", help="Do not save results file")
     args = parser.parse_args()
@@ -302,6 +329,7 @@ def main() -> None:
 
     run_gold_evaluation(
         limit=args.limit,
+        retrieval=not args.no_retrieval,
         save_results=not args.no_save,
         output_path=args.output,
     )

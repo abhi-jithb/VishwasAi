@@ -39,6 +39,8 @@ app.add_middleware(
 class EvaluateRequest(BaseModel):
     question: str
     answer: str
+    retrieval: bool = True
+    inspect: bool = False
 
     @field_validator("question")
     @classmethod
@@ -74,7 +76,12 @@ def health() -> dict[str, str]:
 def api_evaluate(req: EvaluateRequest) -> Any:
     """Run the full Vishwas AI evaluation pipeline on a (question, answer) pair."""
     try:
-        result = evaluate(question=req.question, answer=req.answer)
+        result = evaluate(
+            question=req.question,
+            answer=req.answer,
+            retrieval=req.retrieval,
+            inspect=req.inspect,
+        )
         return result
     except Exception as exc:
         return JSONResponse(
