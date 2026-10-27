@@ -1,16 +1,27 @@
-"""Evaluation runner against gold benchmark claims dataset."""
-
+import argparse
+from datetime import datetime
 import json
+import os
 from pathlib import Path
 import re
 import sys
+import time
 from typing import Any
 
 root_dir = Path(__file__).resolve().parent.parent
 if str(root_dir) not in sys.path:
     sys.path.insert(0, str(root_dir))
 
+from backend.config import get_active_model, get_active_provider
 from backend.evaluation.pipeline import evaluate
+
+try:
+    if sys.stdout.encoding.lower() != "utf-8":
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    if sys.stderr.encoding.lower() != "utf-8":
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
 
 STOP_WORDS = {
     "the", "a", "an", "in", "on", "at", "to", "for", "of", "and", "or",
@@ -32,7 +43,11 @@ def _claim_similarity(s1: str, s2: str) -> float:
     return 0.4 * jaccard + 0.6 * overlap
 
 
-def run_gold_evaluation(limit: int | None = None) -> None:
+def run_gold_evaluation(
+    limit: int | None = None,
+    save_results: bool = True,
+    output_path: str | None = None,
+) -> dict[str, Any]:
     """Run pipeline against data/gold_claims.json and evaluate extraction & verification accuracy."""
     gold_path = root_dir / "data" / "gold_claims.json"
     if not gold_path.exists():
@@ -45,8 +60,12 @@ def run_gold_evaluation(limit: int | None = None) -> None:
     if limit is not None:
         test_cases = test_cases[:limit]
 
+    model_name = get_active_model()
+    provider_name = get_active_provider()
+
     print("=" * 80)
-    print(f"RUNNING VISHWAS AI GOLD EVALUATION BENCHMARK ({len(test_cases)} CASES)")
+    print(f"RUNNING VISHWAS AI GOLD BENCHMARK ({len(test_cases)} CASES)")
+    print(f"Model: {model_name} | Provider: {provider_name}")
     print("=" * 80)
 
     total_gold_claims = 0
@@ -56,6 +75,9 @@ def run_gold_evaluation(limit: int | None = None) -> None:
     total_disagreed_status = 0
 
     category_stats: dict[str, dict[str, int]] = {}
+    detailed_cases: list[dict[str, Any]] = []
+
+    bench_start_time = time.time()
 
     for case in test_cases:
         case_id = case.get("id")
@@ -65,7 +87,9 @@ def run_gold_evaluation(limit: int | None = None) -> None:
         gold_claims = case.get("gold_claims", [])
 
         if category not in category_stats:
-            category_stats[category] = {"gold": 0, "matched": 0, "agreed": 0, "disagreed": 0, "missed": 0}
+            category_stats[category] = {
+                "gold": 0, "matched": 0, "agreed": 0, "disagreed": 0, "missed": 0
+            }
 
         total_gold_claims += len(gold_claims)
         category_stats[category]["gold"] += len(gold_claims)
@@ -74,18 +98,22 @@ def run_gold_evaluation(limit: int | None = None) -> None:
         print(f"    Q: {question}", flush=True)
         print(f"    A: {answer[:100]}..." if len(answer) > 100 else f"    A: {answer}", flush=True)
 
-        # Run pipeline evaluation
+        # Run pipeline evaluation with per-case latency timing
+        case_t0 = time.time()
         try:
             eval_result = evaluate(question=question, answer=answer)
             extracted = eval_result.get("claims", [])
+            cost_log = eval_result.get("cost_log", {})
         except Exception as exc:
             print(f"    [ERROR] Evaluation execution failed: {exc}", flush=True)
             extracted = []
+            cost_log = {}
+        case_duration = time.time() - case_t0
 
-        print(f"    Extracted {len(extracted)} claim(s):", flush=True)
+        print(f"    Extracted {len(extracted)} claim(s) in {case_duration:.2f}s:", flush=True)
         for i, c in enumerate(extracted, 1):
-            badge = "[✓]" if c["status"] == "supported" else "[✗]" if c["status"] == "contradicted" else "[?]"
-            print(f"      {i}. {badge} ({c['status']}): {c['text']}", flush=True)
+            badge = "[✓]" if c.get("status") == "supported" else "[✗]" if c.get("status") == "contradicted" else "[?]"
+            print(f"      {i}. {badge} ({c.get('status')}): {c.get('text')}", flush=True)
 
         # Match gold claims with extracted claims
         matched_extracted_indices: set[int] = set()
@@ -107,7 +135,7 @@ def run_gold_evaluation(limit: int | None = None) -> None:
             for idx, ext in enumerate(extracted):
                 if idx in matched_extracted_indices:
                     continue
-                sim = _claim_similarity(g_text, ext["text"])
+                sim = _claim_similarity(g_text, ext.get("text", ""))
                 if sim > best_sim:
                     best_sim = sim
                     best_idx = idx
@@ -116,7 +144,7 @@ def run_gold_evaluation(limit: int | None = None) -> None:
             if best_sim >= 0.35 and best_idx != -1:
                 matched_extracted_indices.add(best_idx)
                 ext_claim = extracted[best_idx]
-                ext_status = ext_claim["status"].lower()
+                ext_status = ext_claim.get("status", "unsupported").lower()
 
                 if ext_status == g_label:
                     total_agreed_status += 1
@@ -129,7 +157,7 @@ def run_gold_evaluation(limit: int | None = None) -> None:
                     category_stats[category]["disagreed"] += 1
                     disagreements.append(
                         f"✗ '{g_text}' -> Pipeline: [{ext_status}] vs Gold: [{g_label}] "
-                        f"(Matched: '{ext_claim['text']}')"
+                        f"(Matched: '{ext_claim.get('text')}')"
                     )
 
                 total_matched_claims += 1
@@ -154,12 +182,36 @@ def run_gold_evaluation(limit: int | None = None) -> None:
         if not disagreements and not missed_list:
             print("    Status: Perfect match with all gold labels.", flush=True)
 
+        detailed_cases.append(
+            {
+                "case_id": case_id,
+                "category": category,
+                "question": question,
+                "answer": answer,
+                "gold_claims": gold_claims,
+                "extracted_claims": extracted,
+                "agreements": agreements,
+                "disagreements": disagreements,
+                "missed_claims": missed_list,
+                "latency_seconds": round(case_duration, 2),
+                "cost_log": cost_log,
+            }
+        )
+
+    total_bench_duration = time.time() - bench_start_time
+    avg_latency = total_bench_duration / len(test_cases) if test_cases else 0.0
+
     # Print overall benchmark scorecard
     print("\n" + "=" * 80)
     print("                     GOLD BENCHMARK EVALUATION REPORT")
     print("=" * 80)
+    print(f"Model:                       {model_name}")
+    print(f"Provider:                    {provider_name}")
+    print(f"Total Test Cases:            {len(test_cases)}")
+    print(f"Total Benchmark Time:        {total_bench_duration:.2f}s (avg {avg_latency:.2f}s/case)")
     print(f"Total Gold Claims:           {total_gold_claims}")
-    print(f"Total Matched Claims:         {total_matched_claims} ({(total_matched_claims / total_gold_claims * 100):.1f}% recall)")
+    recall_pct = (total_matched_claims / total_gold_claims * 100) if total_gold_claims > 0 else 0.0
+    print(f"Total Matched Claims:         {total_matched_claims} ({recall_pct:.1f}% recall)")
     print(f"Missed Gold Claims:           {total_missed_claims}")
     print(f"Status Agreed (Correct):      {total_agreed_status}")
     print(f"Status Disagreed:             {total_disagreed_status}")
@@ -180,6 +232,80 @@ def run_gold_evaluation(limit: int | None = None) -> None:
         print(f"{cat:<20} | {stats['gold']:<5} | {cat_matched:<7} | {stats['missed']:<6} | {cat_agreed:<6} | {cat_acc:.1f}%")
     print("=" * 80)
 
+    # Compile structured benchmark payload
+    now_iso = datetime.now().isoformat()
+    clean_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    model_slug = re.sub(r"[^a-zA-Z0-9_\.]", "_", model_name)
+
+    benchmark_record = {
+        "benchmark": "Vishwas AI Gold Benchmark",
+        "timestamp": now_iso,
+        "model": model_name,
+        "provider": provider_name,
+        "hardware": {
+            "os": "Windows 11 Home 64-bit",
+            "cpu": "AMD Ryzen 7 250 w/ Radeon 780M Graphics (8 Cores, 16 Threads)",
+            "ram_gb": 24,
+            "gpu": "NVIDIA GeForce RTX 5050 Laptop GPU (4 GB VRAM)",
+        },
+        "settings": {
+            "temperature": 0.0,
+            "retrieval": True,
+            "max_search_results": 3,
+        },
+        "metrics": {
+            "total_cases": len(test_cases),
+            "total_gold_claims": total_gold_claims,
+            "total_matched_claims": total_matched_claims,
+            "claim_extraction_recall": round(recall_pct, 2),
+            "missed_gold_claims": total_missed_claims,
+            "status_agreed": total_agreed_status,
+            "status_disagreed": total_disagreed_status,
+            "verification_accuracy": round(overall_accuracy, 2),
+            "end_to_end_accuracy": round(end_to_end_accuracy, 2),
+            "total_latency_seconds": round(total_bench_duration, 2),
+            "avg_latency_per_case_seconds": round(avg_latency, 2),
+            "category_stats": category_stats,
+        },
+        "cases": detailed_cases,
+    }
+
+    if save_results:
+        results_dir = root_dir / "results"
+        results_dir.mkdir(parents=True, exist_ok=True)
+        if output_path:
+            save_file = Path(output_path)
+        else:
+            save_file = results_dir / f"gold_{model_slug}_{clean_timestamp}.json"
+        with open(save_file, "w", encoding="utf-8") as f:
+            json.dump(benchmark_record, f, indent=2)
+        print(f"\n[SAVED] Benchmark results saved to: {save_file}")
+
+    return benchmark_record
+
+
+def main() -> None:
+    """Parse CLI options and run gold evaluation."""
+    parser = argparse.ArgumentParser(description="Vishwas AI Gold Benchmark Runner")
+    parser.add_argument("--limit", type=int, default=None, help="Limit number of test cases to run")
+    parser.add_argument("--model", type=str, default=None, help="Override LLM model name")
+    parser.add_argument("--provider", type=str, default=None, help="Override LLM provider (e.g. ollama, groq)")
+    parser.add_argument("--output", type=str, default=None, help="Specific JSON file to save results")
+    parser.add_argument("--no-save", action="store_true", help="Do not save results file")
+    args = parser.parse_args()
+
+    if args.provider:
+        os.environ["LLM_PROVIDER"] = args.provider
+    if args.model:
+        os.environ["BENCHMARK_MODEL"] = args.model
+        os.environ["LLM_MODEL"] = args.model
+
+    run_gold_evaluation(
+        limit=args.limit,
+        save_results=not args.no_save,
+        output_path=args.output,
+    )
+
 
 if __name__ == "__main__":
-    run_gold_evaluation()
+    main()

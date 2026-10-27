@@ -1,0 +1,1834 @@
+{
+  "benchmark": "Vishwas AI Gold Benchmark",
+  "timestamp": "2026-10-28T00:05:21.114368",
+  "model": "qwen2.5:7b",
+  "provider": "ollama",
+  "hardware": {
+    "os": "Windows 11 Home 64-bit",
+    "cpu": "AMD Ryzen 7 250 w/ Radeon 780M Graphics (8 Cores, 16 Threads)",
+    "ram_gb": 24,
+    "gpu": "NVIDIA GeForce RTX 5050 Laptop GPU (4 GB VRAM)"
+  },
+  "settings": {
+    "temperature": 0.0,
+    "retrieval": true,
+    "max_search_results": 3
+  },
+  "metrics": {
+    "total_cases": 30,
+    "total_gold_claims": 96,
+    "total_matched_claims": 79,
+    "claim_extraction_recall": 82.29,
+    "missed_gold_claims": 17,
+    "status_agreed": 54,
+    "status_disagreed": 25,
+    "verification_accuracy": 68.35,
+    "end_to_end_accuracy": 56.25,
+    "total_latency_seconds": 742.06,
+    "avg_latency_per_case_seconds": 24.74,
+    "category_stats": {
+      "correct": {
+        "gold": 19,
+        "matched": 13,
+        "agreed": 11,
+        "disagreed": 2,
+        "missed": 6
+      },
+      "planted_error": {
+        "gold": 18,
+        "matched": 12,
+        "agreed": 7,
+        "disagreed": 5,
+        "missed": 6
+      },
+      "fabricated_entity": {
+        "gold": 13,
+        "matched": 12,
+        "agreed": 10,
+        "disagreed": 2,
+        "missed": 1
+      },
+      "outdated_fact": {
+        "gold": 9,
+        "matched": 6,
+        "agreed": 2,
+        "disagreed": 4,
+        "missed": 3
+      },
+      "long_multi_fact": {
+        "gold": 37,
+        "matched": 36,
+        "agreed": 24,
+        "disagreed": 12,
+        "missed": 1
+      }
+    }
+  },
+  "cases": [
+    {
+      "case_id": 1,
+      "category": "correct",
+      "question": "Who discovered penicillin and when?",
+      "answer": "Alexander Fleming discovered penicillin in 1928 at St. Mary's Hospital in London. He shared the Nobel Prize in Physiology or Medicine in 1945 for this breakthrough.",
+      "gold_claims": [
+        {
+          "text": "Alexander Fleming discovered penicillin in 1928.",
+          "label": "supported"
+        },
+        {
+          "text": "Alexander Fleming discovered penicillin at St. Mary's Hospital in London.",
+          "label": "supported"
+        },
+        {
+          "text": "Alexander Fleming shared the Nobel Prize in Physiology or Medicine in 1945.",
+          "label": "supported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Alexander Fleming discovered penicillin in 1928.",
+          "status": "supported",
+          "reasoning": "The evidence snippets explicitly state that Alexander Fleming discovered penicillin in 1928 while working at St Mary's Hospital in London. Snippet [1] and [3] directly confirm the year and location, while snippet [2] confirms the discovery of penicillin and its significance.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Discovery_of_penicillin",
+            "https://en.wikipedia.org/wiki/Alexander_Fleming",
+            "https://en.wikipedia.org/wiki/St_Mary%27s_Hospital%2C_London"
+          ]
+        },
+        {
+          "text": "Alexander Fleming shared the Nobel Prize in Physiology or Medicine in 1945.",
+          "status": "supported",
+          "reasoning": "Snippet from the 'Alexander Fleming' Wikipedia page directly states that Alexander Fleming shared the 1945 Nobel Prize in Physiology or Medicine.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Alexander_Fleming"
+          ]
+        }
+      ],
+      "agreements": [
+        "\u2713 'Alexander Fleming discovered penicillin in 1928.' -> status: supported",
+        "\u2713 'Alexander Fleming shared the Nobel Prize in Physiology or Medicine in 1945.' -> status: supported"
+      ],
+      "disagreements": [],
+      "missed_claims": [
+        "\u2022 Missed gold claim: 'Alexander Fleming discovered penicillin at St. Mary's Hospital in London.' (Gold: supported)"
+      ],
+      "latency_seconds": 0.02,
+      "cost_log": {
+        "llm_calls": 3,
+        "search_calls": 2
+      }
+    },
+    {
+      "case_id": 2,
+      "category": "correct",
+      "question": "What happened during the Apollo 11 mission?",
+      "answer": "The Apollo 11 mission landed on the Moon in July 1969. Neil Armstrong and Buzz Aldrin walked on the lunar surface, while Michael Collins orbited in the command module.",
+      "gold_claims": [
+        {
+          "text": "The Apollo 11 mission landed on the Moon in July 1969.",
+          "label": "supported"
+        },
+        {
+          "text": "Neil Armstrong walked on the lunar surface.",
+          "label": "supported"
+        },
+        {
+          "text": "Buzz Aldrin walked on the lunar surface.",
+          "label": "supported"
+        },
+        {
+          "text": "Michael Collins orbited in the command module during the Apollo 11 mission.",
+          "label": "supported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Neil Armstrong and Buzz Aldrin walked on the lunar surface.",
+          "status": "supported",
+          "reasoning": "Snippets from Wikipedia articles on Neil Armstrong and Buzz Aldrin explicitly state that they were the first people to land on the Moon during the 1969 Apollo 11 mission.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Buzz_Aldrin",
+            "https://en.wikipedia.org/wiki/Neil_Armstrong",
+            "https://en.wikipedia.org/wiki/List_of_people_who_have_flown_to_the_Moon"
+          ]
+        },
+        {
+          "text": "Michael Collins orbited in the command module.",
+          "status": "supported",
+          "reasoning": "Snippet from the first evidence directly states that Michael Collins orbited the Moon in the command module Columbia during Apollo 11.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Michael_Collins_%28astronaut%29"
+          ]
+        }
+      ],
+      "agreements": [
+        "\u2713 'Neil Armstrong walked on the lunar surface.' -> status: supported",
+        "\u2713 'Michael Collins orbited in the command module during the Apollo 11 mission.' -> status: supported"
+      ],
+      "disagreements": [],
+      "missed_claims": [
+        "\u2022 Missed gold claim: 'The Apollo 11 mission landed on the Moon in July 1969.' (Gold: supported)",
+        "\u2022 Missed gold claim: 'Buzz Aldrin walked on the lunar surface.' (Gold: supported)"
+      ],
+      "latency_seconds": 0.02,
+      "cost_log": {
+        "llm_calls": 3,
+        "search_calls": 2
+      }
+    },
+    {
+      "case_id": 3,
+      "category": "correct",
+      "question": "How was the structure of DNA discovered?",
+      "answer": "James Watson and Francis Crick proposed the double-helix structure of DNA in 1953. Their discovery relied on X-ray diffraction images taken by Rosalind Franklin.",
+      "gold_claims": [
+        {
+          "text": "James Watson and Francis Crick proposed the double-helix structure of DNA in 1953.",
+          "label": "supported"
+        },
+        {
+          "text": "Rosalind Franklin took X-ray diffraction images of DNA.",
+          "label": "supported"
+        },
+        {
+          "text": "James Watson and Francis Crick's discovery relied on Rosalind Franklin's X-ray diffraction images.",
+          "label": "supported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Francis Crick proposed the double-helix structure of DNA in 1953.",
+          "status": "supported",
+          "reasoning": "Both snippets [2] and [3] explicitly mention that Francis Crick and James D. Watson proposed the double-helix structure of DNA in 1953. Snippet [1] also supports this by mentioning the double helix structure of DNA was first proposed by Watson and Crick based on their work.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Francis_Crick",
+            "https://en.wikipedia.org/wiki/Molecular_Structure_of_Nucleic_Acids%3A_A_Structure_for_Deoxyribose_Nucleic_Acid"
+          ]
+        },
+        {
+          "text": "The discovery of the double-helix structure of DNA relied on X-ray diffraction images taken by Rosalind Franklin.",
+          "status": "supported",
+          "reasoning": "Snippet 2 from the evidence indicates that Rosalind Franklin obtained X-ray crystallographic pictures of viruses in 1941. Although this snippet does not explicitly mention DNA, it supports the claim that X-ray diffraction images were used in the discovery of the DNA structure. Snippet 1 mentions that the DNA structure was discovered in 1953 based on X-ray diffraction images, which aligns with Franklin's work.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Virology",
+            "https://en.wikipedia.org/wiki/Timeline_of_United_States_discoveries"
+          ]
+        }
+      ],
+      "agreements": [
+        "\u2713 'James Watson and Francis Crick proposed the double-helix structure of DNA in 1953.' -> status: supported",
+        "\u2713 'Rosalind Franklin took X-ray diffraction images of DNA.' -> status: supported"
+      ],
+      "disagreements": [],
+      "missed_claims": [
+        "\u2022 Missed gold claim: 'James Watson and Francis Crick's discovery relied on Rosalind Franklin's X-ray diffraction images.' (Gold: supported)"
+      ],
+      "latency_seconds": 0.02,
+      "cost_log": {
+        "llm_calls": 3,
+        "search_calls": 2
+      }
+    },
+    {
+      "case_id": 4,
+      "category": "correct",
+      "question": "Who created the Python programming language?",
+      "answer": "Guido van Rossum created the Python programming language, which was first released in 1991. The language was named after the British comedy group Monty Python.",
+      "gold_claims": [
+        {
+          "text": "Guido van Rossum created the Python programming language.",
+          "label": "supported"
+        },
+        {
+          "text": "Python was first released in 1991.",
+          "label": "supported"
+        },
+        {
+          "text": "Python was named after the comedy group Monty Python.",
+          "label": "supported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "The language was first released in 1991. The language was named after the British comedy group Monty Python.",
+          "status": "unsupported",
+          "reasoning": "The provided evidence snippets do not mention the year 1991 or the Monty Python comedy group. The snippets are about general definitions and characteristics of language, not about a specific programming language.",
+          "sources": []
+        }
+      ],
+      "agreements": [],
+      "disagreements": [
+        "\u2717 'Python was first released in 1991.' -> Pipeline: [unsupported] vs Gold: [supported] (Matched: 'The language was first released in 1991. The language was named after the British comedy group Monty Python.')"
+      ],
+      "missed_claims": [
+        "\u2022 Missed gold claim: 'Guido van Rossum created the Python programming language.' (Gold: supported)",
+        "\u2022 Missed gold claim: 'Python was named after the comedy group Monty Python.' (Gold: supported)"
+      ],
+      "latency_seconds": 0.01,
+      "cost_log": {
+        "llm_calls": 2,
+        "search_calls": 1
+      }
+    },
+    {
+      "case_id": 5,
+      "category": "correct",
+      "question": "When was Albert Einstein's general theory of relativity confirmed?",
+      "answer": "Albert Einstein published his general theory of relativity in 1915. In 1919, Sir Arthur Eddington measured the deflection of starlight during a solar eclipse, confirming Einstein's predictions.",
+      "gold_claims": [
+        {
+          "text": "Albert Einstein published the general theory of relativity in 1915.",
+          "label": "supported"
+        },
+        {
+          "text": "Sir Arthur Eddington measured the deflection of starlight during a solar eclipse in 1919.",
+          "label": "supported"
+        },
+        {
+          "text": "Arthur Eddington's 1919 observations confirmed Albert Einstein's predictions of general relativity.",
+          "label": "supported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Albert Einstein published his general theory of relativity in 1915.",
+          "status": "unsupported",
+          "reasoning": "None of the provided evidence snippets contain any information related to Albert Einstein, his publications, or the general theory of relativity. The snippets are about Pakistani sex videos and are completely unrelated to the claim.",
+          "sources": []
+        },
+        {
+          "text": "Sir Arthur Eddington measured the deflection of starlight during a solar eclipse in 1919.",
+          "status": "supported",
+          "reasoning": "The evidence from the Wikipedia article on the Eddington experiment (URL: https://en.wikipedia.org/wiki/Eddington_experiment) explicitly states that Sir Arthur Eddington carried out observations of the total solar eclipse of 29 May 1919, which aligns with the claim that he measured the deflection of starlight during a solar eclipse in 1919.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Eddington_experiment"
+          ]
+        },
+        {
+          "text": "Sir Arthur Eddington's measurement confirmed Einstein's predictions.",
+          "status": "supported",
+          "reasoning": "Snippet from the Albert Einstein Wikipedia page states that Eddington's observations were consistent with Einstein's calculations, supporting the claim that Eddington's measurement confirmed Einstein's predictions.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Albert_Einstein"
+          ]
+        }
+      ],
+      "agreements": [
+        "\u2713 'Sir Arthur Eddington measured the deflection of starlight during a solar eclipse in 1919.' -> status: supported",
+        "\u2713 'Arthur Eddington's 1919 observations confirmed Albert Einstein's predictions of general relativity.' -> status: supported"
+      ],
+      "disagreements": [
+        "\u2717 'Albert Einstein published the general theory of relativity in 1915.' -> Pipeline: [unsupported] vs Gold: [supported] (Matched: 'Albert Einstein published his general theory of relativity in 1915.')"
+      ],
+      "missed_claims": [],
+      "latency_seconds": 0.03,
+      "cost_log": {
+        "llm_calls": 4,
+        "search_calls": 3
+      }
+    },
+    {
+      "case_id": 6,
+      "category": "correct",
+      "question": "When was the Eiffel Tower built and who built it?",
+      "answer": "The Eiffel Tower was designed by Gustave Eiffel's engineering company and opened in Paris in 1889. It was constructed as the centerpiece for the 1889 World's Fair.",
+      "gold_claims": [
+        {
+          "text": "The Eiffel Tower was designed by Gustave Eiffel's engineering company.",
+          "label": "supported"
+        },
+        {
+          "text": "The Eiffel Tower opened in Paris in 1889.",
+          "label": "supported"
+        },
+        {
+          "text": "The Eiffel Tower was constructed as the centerpiece for the 1889 World's Fair.",
+          "label": "supported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "The Eiffel Tower was designed by Gustave Eiffel's engineering company.",
+          "status": "supported",
+          "reasoning": "Both snippets [1] and [2] explicitly state that Gustave Eiffel's company designed the Eiffel Tower. Snippet [1] mentions 'whose company designed and built the tower', and snippet [2] states 'most famously the Eiffel Tower, designed by his company'.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Eiffel_Tower",
+            "https://en.wikipedia.org/wiki/Gustave_Eiffel"
+          ]
+        },
+        {
+          "text": "The Eiffel Tower opened in Paris in 1889.",
+          "status": "supported",
+          "reasoning": "Snippet 2 from the evidence directly states that the Eiffel Tower was designed by Gustave Eiffel's company and built for the 1889 Universal Exposition, which is the same year the claim specifies.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Gustave_Eiffel"
+          ]
+        },
+        {
+          "text": "The Eiffel Tower was constructed as the centerpiece for the 1889 World's Fair.",
+          "status": "supported",
+          "reasoning": "Snippet from the Eiffel Tower's Wikipedia page mentions that the tower was built for the 1889 World's Fair, which directly supports the claim.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Gustave_Eiffel"
+          ]
+        }
+      ],
+      "agreements": [
+        "\u2713 'The Eiffel Tower was designed by Gustave Eiffel's engineering company.' -> status: supported",
+        "\u2713 'The Eiffel Tower opened in Paris in 1889.' -> status: supported",
+        "\u2713 'The Eiffel Tower was constructed as the centerpiece for the 1889 World's Fair.' -> status: supported"
+      ],
+      "disagreements": [],
+      "missed_claims": [],
+      "latency_seconds": 0.03,
+      "cost_log": {
+        "llm_calls": 4,
+        "search_calls": 3
+      }
+    },
+    {
+      "case_id": 7,
+      "category": "planted_error",
+      "question": "Who first summited Mount Everest and how tall is it?",
+      "answer": "Mount Everest summit stands at 8,848 meters above sea level. Sir Edmund Hillary and Neil Armstrong first summited Mount Everest in May 1953.",
+      "gold_claims": [
+        {
+          "text": "Mount Everest summit stands at 8,848 meters above sea level.",
+          "label": "supported"
+        },
+        {
+          "text": "Sir Edmund Hillary first summited Mount Everest in May 1953.",
+          "label": "supported"
+        },
+        {
+          "text": "Neil Armstrong first summited Mount Everest in May 1953.",
+          "label": "contradicted"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Mount Everest summit stands at 8,848 meters above sea level.",
+          "status": "supported",
+          "reasoning": "Snippet [1] explicitly states that Mount Everest's height is 8,848 meters above sea level.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Seven_Summits"
+          ]
+        },
+        {
+          "text": "Sir Edmund Hillary first summited Mount Everest in May 1953.",
+          "status": "supported",
+          "reasoning": "Snippet from Edmund Hillary's Wikipedia page explicitly states that Sir Edmund Hillary and Tenzing Norgay summited Mount Everest on 29 May 1953, which confirms the claim.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Edmund_Hillary"
+          ]
+        },
+        {
+          "text": "Neil Armstrong first summited Mount Everest in May 1953.",
+          "status": "unsupported",
+          "reasoning": "The provided evidence snippets are unrelated to the claim and do not contain any information about Neil Armstrong or Mount Everest summits.",
+          "sources": []
+        }
+      ],
+      "agreements": [
+        "\u2713 'Mount Everest summit stands at 8,848 meters above sea level.' -> status: supported",
+        "\u2713 'Sir Edmund Hillary first summited Mount Everest in May 1953.' -> status: supported"
+      ],
+      "disagreements": [
+        "\u2717 'Neil Armstrong first summited Mount Everest in May 1953.' -> Pipeline: [unsupported] vs Gold: [contradicted] (Matched: 'Neil Armstrong first summited Mount Everest in May 1953.')"
+      ],
+      "missed_claims": [],
+      "latency_seconds": 0.03,
+      "cost_log": {
+        "llm_calls": 4,
+        "search_calls": 3
+      }
+    },
+    {
+      "case_id": 8,
+      "category": "planted_error",
+      "question": "When did World War II begin and end?",
+      "answer": "World War II began in September 1939 when Nazi Germany invaded France. The devastating conflict lasted until the unconditional surrender of the Axis powers in 1945.",
+      "gold_claims": [
+        {
+          "text": "World War II began in September 1939.",
+          "label": "supported"
+        },
+        {
+          "text": "Nazi Germany invaded France in September 1939.",
+          "label": "contradicted"
+        },
+        {
+          "text": "World War II ended in 1945 with the surrender of the Axis powers.",
+          "label": "supported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Nazi Germany invaded France.",
+          "status": "unsupported",
+          "reasoning": "The provided snippets do not mention the invasion of France by Nazi Germany. They only provide general information about Nazi Germany and the Nazi Party.",
+          "sources": []
+        },
+        {
+          "text": "The unconditional surrender of the Axis powers occurred.",
+          "status": "supported",
+          "reasoning": "Snippet from the 'Surrender of Japan' Wikipedia page indicates that the United States called for the unconditional surrender of Japan in the Potsdam Declaration on 26 July 1945. This supports the claim that the unconditional surrender of the Axis powers occurred, as Japan was a key Axis power.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Surrender_of_Japan"
+          ]
+        }
+      ],
+      "agreements": [
+        "\u2713 'World War II ended in 1945 with the surrender of the Axis powers.' -> status: supported"
+      ],
+      "disagreements": [
+        "\u2717 'Nazi Germany invaded France in September 1939.' -> Pipeline: [unsupported] vs Gold: [contradicted] (Matched: 'Nazi Germany invaded France.')"
+      ],
+      "missed_claims": [
+        "\u2022 Missed gold claim: 'World War II began in September 1939.' (Gold: supported)"
+      ],
+      "latency_seconds": 0.02,
+      "cost_log": {
+        "llm_calls": 3,
+        "search_calls": 2
+      }
+    },
+    {
+      "case_id": 9,
+      "category": "planted_error",
+      "question": "Can you provide key facts about our Solar System?",
+      "answer": "The Sun is classified as a G-type main-sequence star. Jupiter is the largest planet in our solar system. Mars is the closest planet to the Sun.",
+      "gold_claims": [
+        {
+          "text": "The Sun is classified as a G-type main-sequence star.",
+          "label": "supported"
+        },
+        {
+          "text": "Jupiter is the largest planet in the solar system.",
+          "label": "supported"
+        },
+        {
+          "text": "Mars is the closest planet to the Sun.",
+          "label": "contradicted"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Jupiter is the largest planet in our solar system.",
+          "status": "supported",
+          "reasoning": "Snippet from the Jupiter article states that Jupiter is the largest planet in the Solar System, and the Wikipedia Planet article mentions that the Solar System has eight planets, confirming Jupiter's status as a planet.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Jupiter",
+            "https://en.wikipedia.org/wiki/Planet"
+          ]
+        },
+        {
+          "text": "Mars is the closest planet to the Sun.",
+          "status": "contradicted",
+          "reasoning": "Evidence [1] states that Mercury is the first planet from the Sun, which contradicts the claim that Mars is the closest planet to the Sun.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mercury_%28planet%29"
+          ]
+        }
+      ],
+      "agreements": [
+        "\u2713 'Jupiter is the largest planet in the solar system.' -> status: supported",
+        "\u2713 'Mars is the closest planet to the Sun.' -> status: contradicted"
+      ],
+      "disagreements": [],
+      "missed_claims": [
+        "\u2022 Missed gold claim: 'The Sun is classified as a G-type main-sequence star.' (Gold: supported)"
+      ],
+      "latency_seconds": 0.02,
+      "cost_log": {
+        "llm_calls": 3,
+        "search_calls": 2
+      }
+    },
+    {
+      "case_id": 10,
+      "category": "planted_error",
+      "question": "Who were the first presidents of the United States?",
+      "answer": "The United States Declaration of Independence was adopted in 1776. George Washington served as the first US President. Thomas Jefferson served as the second US President.",
+      "gold_claims": [
+        {
+          "text": "The United States Declaration of Independence was adopted in 1776.",
+          "label": "supported"
+        },
+        {
+          "text": "George Washington served as the first US President.",
+          "label": "supported"
+        },
+        {
+          "text": "Thomas Jefferson served as the second US President.",
+          "label": "contradicted"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Thomas Jefferson served as the second US President.",
+          "status": "contradicted",
+          "reasoning": "The evidence states that Thomas Jefferson was the third president of the United States, not the second.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Thomas_Jefferson",
+            "https://en.wikipedia.org/wiki/Presidency_of_Thomas_Jefferson"
+          ]
+        }
+      ],
+      "agreements": [],
+      "disagreements": [
+        "\u2717 'George Washington served as the first US President.' -> Pipeline: [contradicted] vs Gold: [supported] (Matched: 'Thomas Jefferson served as the second US President.')"
+      ],
+      "missed_claims": [
+        "\u2022 Missed gold claim: 'The United States Declaration of Independence was adopted in 1776.' (Gold: supported)",
+        "\u2022 Missed gold claim: 'Thomas Jefferson served as the second US President.' (Gold: contradicted)"
+      ],
+      "latency_seconds": 0.01,
+      "cost_log": {
+        "llm_calls": 2,
+        "search_calls": 1
+      }
+    },
+    {
+      "case_id": 11,
+      "category": "planted_error",
+      "question": "What are the chemical symbols for gold and silver?",
+      "answer": "Dmitri Mendeleev published the periodic table in 1869. The chemical symbol for gold is Au. The chemical symbol for silver is Si.",
+      "gold_claims": [
+        {
+          "text": "Dmitri Mendeleev published the periodic table in 1869.",
+          "label": "supported"
+        },
+        {
+          "text": "The chemical symbol for gold is Au.",
+          "label": "supported"
+        },
+        {
+          "text": "The chemical symbol for silver is Si.",
+          "label": "contradicted"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "The chemical symbol for silver is Si.",
+          "status": "contradicted",
+          "reasoning": "The chemical symbol for silver is not Si, as stated in the claim. Evidence [2] lists the chemical symbol for silver as Ag.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/List_of_chemical_elements"
+          ]
+        }
+      ],
+      "agreements": [],
+      "disagreements": [
+        "\u2717 'The chemical symbol for gold is Au.' -> Pipeline: [contradicted] vs Gold: [supported] (Matched: 'The chemical symbol for silver is Si.')"
+      ],
+      "missed_claims": [
+        "\u2022 Missed gold claim: 'Dmitri Mendeleev published the periodic table in 1869.' (Gold: supported)",
+        "\u2022 Missed gold claim: 'The chemical symbol for silver is Si.' (Gold: contradicted)"
+      ],
+      "latency_seconds": 0.01,
+      "cost_log": {
+        "llm_calls": 2,
+        "search_calls": 1
+      }
+    },
+    {
+      "case_id": 12,
+      "category": "planted_error",
+      "question": "What happened to the Titanic ocean liner?",
+      "answer": "The RMS Titanic sank in April 1912 after colliding with an iceberg. It was sailing from Southampton to New York City. The ship was owned and operated by the Cunard Line.",
+      "gold_claims": [
+        {
+          "text": "The RMS Titanic sank in April 1912 after colliding with an iceberg.",
+          "label": "supported"
+        },
+        {
+          "text": "The RMS Titanic was sailing from Southampton to New York City.",
+          "label": "supported"
+        },
+        {
+          "text": "The RMS Titanic was owned and operated by the Cunard Line.",
+          "label": "contradicted"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "The RMS Titanic sank after colliding with an iceberg in April 1912.",
+          "status": "supported",
+          "reasoning": "The evidence snippets confirm that the RMS Titanic sank in the North Atlantic Ocean on 15 April 1912 after colliding with an iceberg during its maiden voyage.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Iceberg_that_sank_the_Titanic",
+            "https://en.wikipedia.org/wiki/Sinking_of_the_Titanic",
+            "https://en.wikipedia.org/wiki/Wreck_of_the_Titanic"
+          ]
+        },
+        {
+          "text": "The RMS Titanic was sailing from Southampton to New York City.",
+          "status": "supported",
+          "reasoning": "Both evidence [2] and [3] explicitly mention that the RMS Titanic was sailing from Southampton, England to New York City. Evidence [1] further supports this by mentioning the ticket to Southampton for the Titanic's departure.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/The_Chambermaid_on_the_Titanic",
+            "https://en.wikipedia.org/wiki/Titanic",
+            "https://en.wikipedia.org/wiki/Wreck_of_the_Titanic"
+          ]
+        },
+        {
+          "text": "The RMS Titanic was owned and operated by the Cunard Line.",
+          "status": "unsupported",
+          "reasoning": "None of the provided evidence snippets explicitly state that the RMS Titanic was owned and operated by the Cunard Line. Snippet [1] only mentions the sinking of the Titanic, and snippets [2] and [3] discuss other Cunard Line vessels without directly referencing the Titanic.",
+          "sources": []
+        }
+      ],
+      "agreements": [
+        "\u2713 'The RMS Titanic sank in April 1912 after colliding with an iceberg.' -> status: supported",
+        "\u2713 'The RMS Titanic was sailing from Southampton to New York City.' -> status: supported"
+      ],
+      "disagreements": [
+        "\u2717 'The RMS Titanic was owned and operated by the Cunard Line.' -> Pipeline: [unsupported] vs Gold: [contradicted] (Matched: 'The RMS Titanic was owned and operated by the Cunard Line.')"
+      ],
+      "missed_claims": [],
+      "latency_seconds": 0.03,
+      "cost_log": {
+        "llm_calls": 4,
+        "search_calls": 3
+      }
+    },
+    {
+      "case_id": 13,
+      "category": "fabricated_entity",
+      "question": "What is Cafe Zyxvu known for in Iceland?",
+      "answer": "Cafe Zyxvu is located in rural Iceland. It served purple fermented moss stew to tourists in 2024.",
+      "gold_claims": [
+        {
+          "text": "Cafe Zyxvu is located in rural Iceland.",
+          "label": "unsupported"
+        },
+        {
+          "text": "Cafe Zyxvu served purple fermented moss stew to tourists in 2024.",
+          "label": "unsupported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Cafe Zyxvu served purple fermented moss stew to tourists in 2024.",
+          "status": "contradicted",
+          "reasoning": "The provided evidence snippets do not mention any purple fermented moss stew or Cafe Zyxvu. The snippets are about general cafe offerings and locations, which do not support or contradict the specific claim about a unique dish served by a specific cafe in a future year.",
+          "sources": []
+        }
+      ],
+      "agreements": [],
+      "disagreements": [
+        "\u2717 'Cafe Zyxvu served purple fermented moss stew to tourists in 2024.' -> Pipeline: [contradicted] vs Gold: [unsupported] (Matched: 'Cafe Zyxvu served purple fermented moss stew to tourists in 2024.')"
+      ],
+      "missed_claims": [
+        "\u2022 Missed gold claim: 'Cafe Zyxvu is located in rural Iceland.' (Gold: unsupported)"
+      ],
+      "latency_seconds": 21.02,
+      "cost_log": {
+        "llm_calls": 2,
+        "search_calls": 1
+      }
+    },
+    {
+      "case_id": 14,
+      "category": "fabricated_entity",
+      "question": "What invention did Kevin McAllister build in 2024?",
+      "answer": "In January 2024, Kevin McAllister built a magnetic anti-gravity toaster in his Chicago basement. The toaster toasts bread using quantum microwave resonance.",
+      "gold_claims": [
+        {
+          "text": "Kevin McAllister built a magnetic anti-gravity toaster in Chicago in January 2024.",
+          "label": "unsupported"
+        },
+        {
+          "text": "The magnetic anti-gravity toaster toasts bread using quantum microwave resonance.",
+          "label": "unsupported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "In January 2024, Kevin McAllister built a magnetic anti-gravity toaster in his Chicago basement.",
+          "status": "unsupported",
+          "reasoning": "No relevant search evidence was found for this claim.",
+          "sources": []
+        },
+        {
+          "text": "The toaster toasts bread using quantum microwave resonance.",
+          "status": "unsupported",
+          "reasoning": "No relevant search evidence was found for this claim.",
+          "sources": []
+        }
+      ],
+      "agreements": [
+        "\u2713 'Kevin McAllister built a magnetic anti-gravity toaster in Chicago in January 2024.' -> status: unsupported",
+        "\u2713 'The magnetic anti-gravity toaster toasts bread using quantum microwave resonance.' -> status: unsupported"
+      ],
+      "disagreements": [],
+      "missed_claims": [],
+      "latency_seconds": 1.47,
+      "cost_log": {
+        "llm_calls": 1,
+        "search_calls": 2
+      }
+    },
+    {
+      "case_id": 15,
+      "category": "fabricated_entity",
+      "question": "Who is Dr. Aris Thorne and what did he invent at Cambridge?",
+      "answer": "Dr. Aris Thorne invented the ChronoSync tachyon watch at the University of Cambridge in 2023. The device slows biological aging by 15% using localized temporal fields.",
+      "gold_claims": [
+        {
+          "text": "Dr. Aris Thorne invented the ChronoSync tachyon watch at the University of Cambridge in 2023.",
+          "label": "unsupported"
+        },
+        {
+          "text": "The ChronoSync tachyon watch slows biological aging by 15%.",
+          "label": "unsupported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Dr. Aris Thorne invented the ChronoSync tachyon watch.",
+          "status": "unsupported",
+          "reasoning": "No relevant search evidence was found for this claim.",
+          "sources": []
+        },
+        {
+          "text": "The ChronoSync tachyon watch was invented at the University of Cambridge.",
+          "status": "unsupported",
+          "reasoning": "None of the provided evidence snippets mention the ChronoSync tachyon watch or the University of Cambridge. The snippets are related to the Google Chrome web browser and its extensions, which are unrelated to the claim.",
+          "sources": []
+        },
+        {
+          "text": "The ChronoSync tachyon watch was invented in 2023.",
+          "status": "unsupported",
+          "reasoning": "The provided snippets do not mention the year 2023 or the ChronoSync tachyon watch. They only discuss Tachyon watches in general and a ChronoSync feature for mechanical watches.",
+          "sources": []
+        },
+        {
+          "text": "The ChronoSync tachyon watch slows biological aging by 15%.",
+          "status": "unsupported",
+          "reasoning": "None of the provided evidence snippets mention the ChronoSync tachyon watch or any claims about slowing biological aging by 15%. The snippets are about getting help in Windows operating systems.",
+          "sources": []
+        },
+        {
+          "text": "The ChronoSync tachyon watch uses localized temporal fields.",
+          "status": "unsupported",
+          "reasoning": "No relevant search evidence was found for this claim.",
+          "sources": []
+        }
+      ],
+      "agreements": [
+        "\u2713 'Dr. Aris Thorne invented the ChronoSync tachyon watch at the University of Cambridge in 2023.' -> status: unsupported",
+        "\u2713 'The ChronoSync tachyon watch slows biological aging by 15%.' -> status: unsupported"
+      ],
+      "disagreements": [],
+      "missed_claims": [],
+      "latency_seconds": 1.41,
+      "cost_log": {
+        "llm_calls": 4,
+        "search_calls": 5
+      }
+    },
+    {
+      "case_id": 16,
+      "category": "fabricated_entity",
+      "question": "What is the capital and currency of the Republic of Veridia?",
+      "answer": "The Republic of Veridia is an island sovereign state in the South Pacific founded in 1998. Its official capital is Port Zephyr, and its national currency is the Veridian Sol.",
+      "gold_claims": [
+        {
+          "text": "The Republic of Veridia is an island sovereign state in the South Pacific founded in 1998.",
+          "label": "unsupported"
+        },
+        {
+          "text": "The official capital of the Republic of Veridia is Port Zephyr.",
+          "label": "unsupported"
+        },
+        {
+          "text": "The national currency of the Republic of Veridia is the Veridian Sol.",
+          "label": "unsupported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "The Republic of Veridia is an island sovereign state in the South Pacific.",
+          "status": "unsupported",
+          "reasoning": "None of the provided evidence snippets mention the Republic of Veridia or provide any information about an island sovereign state in the South Pacific. The snippets are related to Republic World and Republic TV, which are Indian news channels.",
+          "sources": []
+        },
+        {
+          "text": "The Republic of Veridia was founded in 1998.",
+          "status": "unsupported",
+          "reasoning": "The provided evidence does not mention the founding year of the Republic of Veridia. The evidence only refers to a band named Veridia, which is not related to the claim about the republic's founding year.",
+          "sources": []
+        },
+        {
+          "text": "The official capital of the Republic of Veridia is Port Zephyr.",
+          "status": "unsupported",
+          "reasoning": "No relevant search evidence was found for this claim.",
+          "sources": []
+        },
+        {
+          "text": "The national currency of the Republic of Veridia is the Veridian Sol.",
+          "status": "unsupported",
+          "reasoning": "No relevant search evidence was found for this claim.",
+          "sources": []
+        }
+      ],
+      "agreements": [
+        "\u2713 'The Republic of Veridia is an island sovereign state in the South Pacific founded in 1998.' -> status: unsupported",
+        "\u2713 'The official capital of the Republic of Veridia is Port Zephyr.' -> status: unsupported",
+        "\u2713 'The national currency of the Republic of Veridia is the Veridian Sol.' -> status: unsupported"
+      ],
+      "disagreements": [],
+      "missed_claims": [],
+      "latency_seconds": 1.23,
+      "cost_log": {
+        "llm_calls": 3,
+        "search_calls": 4
+      }
+    },
+    {
+      "case_id": 17,
+      "category": "fabricated_entity",
+      "question": "What occurs at the Oakhaven Cryptid Festival?",
+      "answer": "The Oakhaven Cryptid Festival is an annual gathering in Oakhaven, Oregon, dedicated to the winged swamp badger. Over 25,000 attendees gathered for the festival in September 2023.",
+      "gold_claims": [
+        {
+          "text": "The Oakhaven Cryptid Festival is an annual festival in Oakhaven, Oregon, celebrating the winged swamp badger.",
+          "label": "unsupported"
+        },
+        {
+          "text": "Over 25,000 attendees gathered for the Oakhaven Cryptid Festival in September 2023.",
+          "label": "unsupported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "The Oakhaven Cryptid Festival is an annual gathering.",
+          "status": "unsupported",
+          "reasoning": "The provided evidence snippets are unrelated to the Oakhaven Cryptid Festival and do not mention any information about its annual nature or existence.",
+          "sources": []
+        },
+        {
+          "text": "The Oakhaven Cryptid Festival is dedicated to the winged swamp badger.",
+          "status": "unsupported",
+          "reasoning": "No relevant search evidence was found for this claim.",
+          "sources": []
+        },
+        {
+          "text": "The Oakhaven Cryptid Festival took place in Oakhaven, Oregon.",
+          "status": "unsupported",
+          "reasoning": "No relevant search evidence was found for this claim.",
+          "sources": []
+        },
+        {
+          "text": "Over 25,000 attendees gathered for the festival.",
+          "status": "supported",
+          "reasoning": "Evidence snippet [2] from the Love Parade Wikipedia page states that the 2006 version gathered over 200,000 people, and the first Love Parade in Caracas gathered over 25,000 people, which directly supports the claim.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Love_Parade"
+          ]
+        },
+        {
+          "text": "The festival occurred in September 2023.",
+          "status": "unsupported",
+          "reasoning": "None of the provided evidence snippets mention a festival occurring in September 2023. Snippet [1] discusses an attack in October 2023, and snippet [2] talks about floods in September 2023, but neither relates to a festival. Snippet [3] is a general list of festivals in Wales and does not specify any dates.",
+          "sources": []
+        }
+      ],
+      "agreements": [
+        "\u2713 'The Oakhaven Cryptid Festival is an annual festival in Oakhaven, Oregon, celebrating the winged swamp badger.' -> status: unsupported"
+      ],
+      "disagreements": [
+        "\u2717 'Over 25,000 attendees gathered for the Oakhaven Cryptid Festival in September 2023.' -> Pipeline: [supported] vs Gold: [unsupported] (Matched: 'Over 25,000 attendees gathered for the festival.')"
+      ],
+      "missed_claims": [],
+      "latency_seconds": 18.86,
+      "cost_log": {
+        "llm_calls": 4,
+        "search_calls": 5
+      }
+    },
+    {
+      "case_id": 18,
+      "category": "fabricated_entity",
+      "question": "What is the LuminaTech zero-point battery?",
+      "answer": "LuminaTech unveiled a commercial desktop cold-fusion battery in November 2022. The battery produces 50 kilowatts of continuous electricity from ambient humidity.",
+      "gold_claims": [
+        {
+          "text": "LuminaTech unveiled a commercial desktop cold-fusion battery in November 2022.",
+          "label": "unsupported"
+        },
+        {
+          "text": "The LuminaTech battery produces 50 kilowatts of continuous electricity from ambient humidity.",
+          "label": "unsupported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "LuminaTech unveiled a commercial desktop cold-fusion battery.",
+          "status": "unsupported",
+          "reasoning": "No relevant search evidence was found for this claim.",
+          "sources": []
+        },
+        {
+          "text": "The battery was unveiled in November 2022.",
+          "status": "unsupported",
+          "reasoning": "The evidence snippets do not provide any information about the unveiling of a battery in November 2022. Snippet [1] discusses the 18650 battery size, snippet [2] mentions the Jenhoo EV48 unveiling in November 2022, and snippet [3] talks about the Tesla Semi. None of these snippets relate to the battery being unveiled in November 2022.",
+          "sources": []
+        },
+        {
+          "text": "The battery produces 50 kilowatts of continuous electricity.",
+          "status": "unsupported",
+          "reasoning": "None of the provided evidence snippets mention the specific output of a battery in kilowatts or any other electricity production capacity.",
+          "sources": []
+        },
+        {
+          "text": "The electricity is produced from ambient humidity.",
+          "status": "unsupported",
+          "reasoning": "The provided evidence snippets discuss humidity and its relation to water vapor in the air, but do not mention the production of electricity from ambient humidity. The evidence does not support the claim.",
+          "sources": []
+        }
+      ],
+      "agreements": [
+        "\u2713 'LuminaTech unveiled a commercial desktop cold-fusion battery in November 2022.' -> status: unsupported",
+        "\u2713 'The LuminaTech battery produces 50 kilowatts of continuous electricity from ambient humidity.' -> status: unsupported"
+      ],
+      "disagreements": [],
+      "missed_claims": [],
+      "latency_seconds": 1.4,
+      "cost_log": {
+        "llm_calls": 4,
+        "search_calls": 4
+      }
+    },
+    {
+      "case_id": 19,
+      "category": "outdated_fact",
+      "question": "How is Pluto classified in astronomy?",
+      "answer": "Pluto is currently classified as the ninth major planet of the solar system. It was discovered by Clyde Tombaugh in 1930.",
+      "gold_claims": [
+        {
+          "text": "Pluto is currently classified as a major planet of the solar system.",
+          "label": "contradicted"
+        },
+        {
+          "text": "Clyde Tombaugh discovered Pluto in 1930.",
+          "label": "supported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Pluto is currently classified as a dwarf planet in the solar system.",
+          "status": "unsupported",
+          "reasoning": "The provided evidence snippets are related to Pluto TV, a streaming service, and do not contain any information about Pluto's classification in the solar system.",
+          "sources": []
+        }
+      ],
+      "agreements": [],
+      "disagreements": [
+        "\u2717 'Pluto is currently classified as a major planet of the solar system.' -> Pipeline: [unsupported] vs Gold: [contradicted] (Matched: 'Pluto is currently classified as a dwarf planet in the solar system.')"
+      ],
+      "missed_claims": [
+        "\u2022 Missed gold claim: 'Clyde Tombaugh discovered Pluto in 1930.' (Gold: supported)"
+      ],
+      "latency_seconds": 0.02,
+      "cost_log": {
+        "llm_calls": 2,
+        "search_calls": 1
+      }
+    },
+    {
+      "case_id": 20,
+      "category": "outdated_fact",
+      "question": "What is the current population of planet Earth?",
+      "answer": "The human population of planet Earth is currently under 6 billion people.",
+      "gold_claims": [
+        {
+          "text": "The human population of Earth is currently under 6 billion people.",
+          "label": "contradicted"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "The human population of planet Earth is currently under 6 billion people.",
+          "status": "contradicted",
+          "reasoning": "The provided evidence snippets are about Google Translate services and do not provide any information about the current human population of Earth. Therefore, they contradict the claim by not supporting or refuting it.",
+          "sources": []
+        }
+      ],
+      "agreements": [
+        "\u2713 'The human population of Earth is currently under 6 billion people.' -> status: contradicted"
+      ],
+      "disagreements": [],
+      "missed_claims": [],
+      "latency_seconds": 0.02,
+      "cost_log": {
+        "llm_calls": 2,
+        "search_calls": 1
+      }
+    },
+    {
+      "case_id": 21,
+      "category": "outdated_fact",
+      "question": "Is the United Kingdom a member state of the European Union?",
+      "answer": "The United Kingdom is a member state of the European Union. The European Union has its headquarters in Brussels, Belgium.",
+      "gold_claims": [
+        {
+          "text": "The United Kingdom is a member state of the European Union.",
+          "label": "contradicted"
+        },
+        {
+          "text": "The European Union has headquarters in Brussels, Belgium.",
+          "label": "supported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "The European Union has its headquarters in Brussels, Belgium.",
+          "status": "unsupported",
+          "reasoning": "None of the provided evidence snippets mention the European Union or Brussels, Belgium. They are unrelated to the claim and pertain to Instagram and its features.",
+          "sources": []
+        }
+      ],
+      "agreements": [],
+      "disagreements": [
+        "\u2717 'The European Union has headquarters in Brussels, Belgium.' -> Pipeline: [unsupported] vs Gold: [supported] (Matched: 'The European Union has its headquarters in Brussels, Belgium.')"
+      ],
+      "missed_claims": [
+        "\u2022 Missed gold claim: 'The United Kingdom is a member state of the European Union.' (Gold: contradicted)"
+      ],
+      "latency_seconds": 0.02,
+      "cost_log": {
+        "llm_calls": 2,
+        "search_calls": 1
+      }
+    },
+    {
+      "case_id": 22,
+      "category": "outdated_fact",
+      "question": "What is the deepest known oceanic trench on Earth?",
+      "answer": "The Puerto Rico Trench is the deepest oceanic trench on planet Earth.",
+      "gold_claims": [
+        {
+          "text": "The Puerto Rico Trench is the deepest oceanic trench on Earth.",
+          "label": "contradicted"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "The Puerto Rico Trench is the deepest oceanic trench on planet Earth.",
+          "status": "unsupported",
+          "reasoning": "None of the provided evidence snippets mention the Puerto Rico Trench or its depth in comparison to other oceanic trenches. The snippets are about the location of Puerto Rico and the word 'puerto' in Spanish, which are unrelated to the claim.",
+          "sources": []
+        }
+      ],
+      "agreements": [],
+      "disagreements": [
+        "\u2717 'The Puerto Rico Trench is the deepest oceanic trench on Earth.' -> Pipeline: [unsupported] vs Gold: [contradicted] (Matched: 'The Puerto Rico Trench is the deepest oceanic trench on planet Earth.')"
+      ],
+      "missed_claims": [],
+      "latency_seconds": 0.02,
+      "cost_log": {
+        "llm_calls": 2,
+        "search_calls": 1
+      }
+    },
+    {
+      "case_id": 23,
+      "category": "outdated_fact",
+      "question": "What is element 118 on the periodic table called?",
+      "answer": "Element 118 on the periodic table remains an unnamed provisional element officially called Ununoctium.",
+      "gold_claims": [
+        {
+          "text": "Element 118 on the periodic table is officially called Ununoctium and has no official name.",
+          "label": "contradicted"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Element 118 on the periodic table remains an unnamed provisional element.",
+          "status": "unsupported",
+          "reasoning": "None of the provided evidence snippets mention element 118 or any information related to its naming status on the periodic table.",
+          "sources": []
+        },
+        {
+          "text": "Element 118 on the periodic table is officially called Ununoctium.",
+          "status": "supported",
+          "reasoning": "Snippet from URL https://en.wikipedia.org/wiki/Chemical_symbol states that element 118 is officially called ununoctium, which is also abbreviated as Uuo.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Chemical_symbol"
+          ]
+        }
+      ],
+      "agreements": [],
+      "disagreements": [
+        "\u2717 'Element 118 on the periodic table is officially called Ununoctium and has no official name.' -> Pipeline: [supported] vs Gold: [contradicted] (Matched: 'Element 118 on the periodic table is officially called Ununoctium.')"
+      ],
+      "missed_claims": [],
+      "latency_seconds": 0.03,
+      "cost_log": {
+        "llm_calls": 3,
+        "search_calls": 2
+      }
+    },
+    {
+      "case_id": 24,
+      "category": "outdated_fact",
+      "question": "Who is the reigning monarch of the United Kingdom?",
+      "answer": "Queen Elizabeth II is the reigning monarch of the United Kingdom. Buckingham Palace is located in London.",
+      "gold_claims": [
+        {
+          "text": "Queen Elizabeth II is the reigning monarch of the United Kingdom.",
+          "label": "contradicted"
+        },
+        {
+          "text": "Buckingham Palace is located in London.",
+          "label": "supported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Buckingham Palace is located in London.",
+          "status": "supported",
+          "reasoning": "Snippet from evidence [1] explicitly states that Buckingham Palace is located in London, England.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Buckingham_Palace"
+          ]
+        }
+      ],
+      "agreements": [
+        "\u2713 'Buckingham Palace is located in London.' -> status: supported"
+      ],
+      "disagreements": [],
+      "missed_claims": [
+        "\u2022 Missed gold claim: 'Queen Elizabeth II is the reigning monarch of the United Kingdom.' (Gold: contradicted)"
+      ],
+      "latency_seconds": 0.02,
+      "cost_log": {
+        "llm_calls": 2,
+        "search_calls": 1
+      }
+    },
+    {
+      "case_id": 25,
+      "category": "long_multi_fact",
+      "question": "What were Isaac Newton's major scientific contributions?",
+      "answer": "Sir Isaac Newton was an English mathematician and physicist born in 1643. He formulated the three fundamental laws of motion. He published Philosophi\u00e6 Naturalis Principia Mathematica in 1687. Newton developed infinitesimal calculus independently around the same time as Leibniz. He designed and built the first practical reflecting telescope. Later in life, he served as the Master of the Royal Mint in London.",
+      "gold_claims": [
+        {
+          "text": "Sir Isaac Newton was born in 1643.",
+          "label": "supported"
+        },
+        {
+          "text": "Isaac Newton formulated the three fundamental laws of motion.",
+          "label": "supported"
+        },
+        {
+          "text": "Isaac Newton published Philosophi\u00e6 Naturalis Principia Mathematica in 1687.",
+          "label": "supported"
+        },
+        {
+          "text": "Isaac Newton developed calculus independently around the same time as Leibniz.",
+          "label": "supported"
+        },
+        {
+          "text": "Isaac Newton designed and built the first practical reflecting telescope.",
+          "label": "supported"
+        },
+        {
+          "text": "Isaac Newton served as the Master of the Royal Mint in London.",
+          "label": "supported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Isaac Newton was an English mathematician and physicist.",
+          "status": "supported",
+          "reasoning": "The evidence snippets explicitly state that Isaac Newton was an English mathematician and physicist. Snippet [1] and [2] directly confirm his nationality and fields of study, while snippet [3] further supports his identity as an English scientist.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Isaac_Newton",
+            "https://en.wikipedia.org/wiki/Isaac_Newton_%28disambiguation%29"
+          ]
+        },
+        {
+          "text": "He formulated the three fundamental laws of motion.",
+          "status": "supported",
+          "reasoning": "The evidence from snippet [1] explicitly states that Newton's laws of motion describe the relationship between the motion of an object and the forces acting on it, which directly supports the claim that he formulated the three fundamental laws of motion.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Newton%27s_laws_of_motion"
+          ]
+        },
+        {
+          "text": "He published Philosophi\u00e6 Naturalis Principia Mathematica in 1687.",
+          "status": "supported",
+          "reasoning": "Snippet from the third evidence directly states that Isaac Newton published Philosophi\u00e6 Naturalis Principia Mathematica in 1687.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Newton%27s_laws_of_motion"
+          ]
+        },
+        {
+          "text": "Newton developed infinitesimal calculus independently around the same time as Leibniz.",
+          "status": "supported",
+          "reasoning": "Snippet from evidence [2] states that Newton and Leibniz both contributed to the development of infinitesimal calculus in the 17th century, supporting the claim that they developed it independently around the same time.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Leibniz%27s_notation"
+          ]
+        },
+        {
+          "text": "He designed and built the first practical reflecting telescope.",
+          "status": "supported",
+          "reasoning": "The evidence from snippet [2] states that Sir Isaac Newton completed his first telescope in 1668, which is the earliest known functional reflecting telescope. This directly supports the claim that he designed and built the first practical reflecting telescope.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/History_of_the_telescope"
+          ]
+        },
+        {
+          "text": "He served as the Master of the Royal Mint in London.",
+          "status": "unsupported",
+          "reasoning": "None of the provided evidence snippets mention the Master of the Royal Mint or any specific individual serving in that role. The snippets discuss the Royal Mint's current location and other historical uses of the Tower of London but do not provide information about the Master of the Royal Mint in London.",
+          "sources": []
+        }
+      ],
+      "agreements": [
+        "\u2713 'Isaac Newton formulated the three fundamental laws of motion.' -> status: supported",
+        "\u2713 'Isaac Newton published Philosophi\u00e6 Naturalis Principia Mathematica in 1687.' -> status: supported",
+        "\u2713 'Isaac Newton developed calculus independently around the same time as Leibniz.' -> status: supported",
+        "\u2713 'Isaac Newton designed and built the first practical reflecting telescope.' -> status: supported"
+      ],
+      "disagreements": [
+        "\u2717 'Isaac Newton served as the Master of the Royal Mint in London.' -> Pipeline: [unsupported] vs Gold: [supported] (Matched: 'He served as the Master of the Royal Mint in London.')"
+      ],
+      "missed_claims": [
+        "\u2022 Missed gold claim: 'Sir Isaac Newton was born in 1643.' (Gold: supported)"
+      ],
+      "latency_seconds": 0.08,
+      "cost_log": {
+        "llm_calls": 7,
+        "search_calls": 6
+      }
+    },
+    {
+      "case_id": 26,
+      "category": "long_multi_fact",
+      "question": "Can you summarize the life and accomplishments of Marie Curie?",
+      "answer": "Marie Curie was a Polish-born physicist and chemist who conducted pioneering research on radioactivity. She was the first woman to win a Nobel Prize when she received the Physics prize in 1903. She discovered the chemical elements polonium and radium. In 1911, she was awarded a second Nobel Prize, which was in Literature. Curie died in 1934 from aplastic anemia caused by radiation exposure.",
+      "gold_claims": [
+        {
+          "text": "Marie Curie was a Polish-born physicist and chemist.",
+          "label": "supported"
+        },
+        {
+          "text": "Marie Curie conducted pioneering research on radioactivity.",
+          "label": "supported"
+        },
+        {
+          "text": "Marie Curie was the first woman to win a Nobel Prize.",
+          "label": "supported"
+        },
+        {
+          "text": "Marie Curie received the Nobel Prize in Physics in 1903.",
+          "label": "supported"
+        },
+        {
+          "text": "Marie Curie discovered the chemical elements polonium and radium.",
+          "label": "supported"
+        },
+        {
+          "text": "Marie Curie was awarded the Nobel Prize in Literature in 1911.",
+          "label": "contradicted"
+        },
+        {
+          "text": "Marie Curie died in 1934 from aplastic anemia caused by radiation exposure.",
+          "label": "supported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Marie Curie was a Polish-born physicist and chemist.",
+          "status": "supported",
+          "reasoning": "The evidence from snippet [1] explicitly states that Marie Curie was a Polish and naturalised-French physicist and chemist, which directly supports the claim.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Marie_Curie"
+          ]
+        },
+        {
+          "text": "She conducted pioneering research on radioactivity.",
+          "status": "supported",
+          "reasoning": "Snippet [1] explicitly states that Jadwiga Szmidt conducted pioneering research on radioactivity, which directly supports the claim.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Jadwiga_Szmidt"
+          ]
+        },
+        {
+          "text": "She was the first woman to win a Nobel Prize.",
+          "status": "supported",
+          "reasoning": "The evidence from the Selma Lagerl\u00f6f snippet explicitly states that she was the first woman to win the Nobel Prize in Literature, which directly supports the claim.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Selma_Lagerl%C3%B6f"
+          ]
+        },
+        {
+          "text": "She received the Physics prize in 1903.",
+          "status": "supported",
+          "reasoning": "Snippet from URL https://en.wikipedia.org/wiki/Pierre_Curie states that Pierre Curie shared one half of the 1903 Nobel Prize in Physics with his wife, Maria Sk\u0142odowska-Curie. This directly supports the claim.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Pierre_Curie"
+          ]
+        },
+        {
+          "text": "She discovered the chemical element polonium.",
+          "status": "unsupported",
+          "reasoning": "The provided evidence does not mention any person discovering polonium. It only provides general information about polonium and a related poisoning incident.",
+          "sources": []
+        },
+        {
+          "text": "She discovered the chemical element radium.",
+          "status": "supported",
+          "reasoning": "The evidence snippet from Marie Curie's Wikipedia page states that she named the first chemical element she and Pierre discovered polonium. This implies that she did discover a chemical element, supporting the claim that she discovered radium, even though the snippet does not explicitly mention radium.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Marie_Curie"
+          ]
+        },
+        {
+          "text": "In 1911, she was awarded a second Nobel Prize.",
+          "status": "unsupported",
+          "reasoning": "The provided evidence does not mention any specific individual or the year 1911. It only provides general information about the Nobel Prize, the number of laureates in Literature, and a list of couples awarded the prize. There is no direct evidence supporting the claim that she was awarded a second Nobel Prize in 1911.",
+          "sources": []
+        },
+        {
+          "text": "The second Nobel Prize was in Chemistry.",
+          "status": "supported",
+          "reasoning": "Snippet from URL https://en.wikipedia.org/wiki/List_of_Nobel_laureates states that the Nobel Prize in Chemistry was awarded to Frederick, confirming that the second Nobel Prize was in Chemistry.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/List_of_Nobel_laureates"
+          ]
+        },
+        {
+          "text": "Curie died in 1934.",
+          "status": "supported",
+          "reasoning": "Both evidence [1] and [2] explicitly state that Marie Curie died on July 4, 1934, which confirms the claim.",
+          "sources": [
+            "https://en.m.wikipedia.org/wiki/Marie_Curie",
+            "https://www.britannica.com/question/How-did-Marie-Curie-die"
+          ]
+        },
+        {
+          "text": "Curie died from aplastic anemia caused by radiation exposure.",
+          "status": "unsupported",
+          "reasoning": "None of the provided evidence snippets discuss Marie Curie, aplastic anemia, or radiation exposure. The snippets are related to the definition and meaning of the word 'scheduled' and are unrelated to the claim.",
+          "sources": []
+        }
+      ],
+      "agreements": [
+        "\u2713 'Marie Curie was a Polish-born physicist and chemist.' -> status: supported",
+        "\u2713 'Marie Curie conducted pioneering research on radioactivity.' -> status: supported",
+        "\u2713 'Marie Curie was the first woman to win a Nobel Prize.' -> status: supported",
+        "\u2713 'Marie Curie received the Nobel Prize in Physics in 1903.' -> status: supported"
+      ],
+      "disagreements": [
+        "\u2717 'Marie Curie discovered the chemical elements polonium and radium.' -> Pipeline: [unsupported] vs Gold: [supported] (Matched: 'She discovered the chemical element polonium.')",
+        "\u2717 'Marie Curie was awarded the Nobel Prize in Literature in 1911.' -> Pipeline: [unsupported] vs Gold: [contradicted] (Matched: 'In 1911, she was awarded a second Nobel Prize.')",
+        "\u2717 'Marie Curie died in 1934 from aplastic anemia caused by radiation exposure.' -> Pipeline: [unsupported] vs Gold: [supported] (Matched: 'Curie died from aplastic anemia caused by radiation exposure.')"
+      ],
+      "missed_claims": [],
+      "latency_seconds": 0.11,
+      "cost_log": {
+        "llm_calls": 11,
+        "search_calls": 10
+      }
+    },
+    {
+      "case_id": 27,
+      "category": "long_multi_fact",
+      "question": "What was Charles Darwin's scientific career?",
+      "answer": "Charles Darwin was an English naturalist born in 1809. In 1831, he joined the survey expedition on the HMS Beagle. He conducted extensive geological and biological observations in the Galapagos Islands. In 1859, Darwin published On the Origin of Species. He proposed natural selection as the mechanism of evolutionary change. Darwin was buried in Westminster Abbey upon his death in 1882.",
+      "gold_claims": [
+        {
+          "text": "Charles Darwin was an English naturalist born in 1809.",
+          "label": "supported"
+        },
+        {
+          "text": "Charles Darwin joined the survey expedition on the HMS Beagle in 1831.",
+          "label": "supported"
+        },
+        {
+          "text": "Charles Darwin visited and conducted observations in the Galapagos Islands.",
+          "label": "supported"
+        },
+        {
+          "text": "Charles Darwin published On the Origin of Species in 1859.",
+          "label": "supported"
+        },
+        {
+          "text": "Charles Darwin proposed natural selection as the mechanism of evolution.",
+          "label": "supported"
+        },
+        {
+          "text": "Charles Darwin was buried in Westminster Abbey in 1882.",
+          "label": "supported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Charles Darwin was an English naturalist born in 1809.",
+          "status": "supported",
+          "reasoning": "The evidence from snippet [1] confirms that Charles Darwin was an English naturalist born in 1809, specifically stating 'Charles Robert Darwin (/\u02c8d\u0251\u02d0rw\u026an/ DAR-win; 12 February 1809\u00a0\u2013 19 April 1882) was an English naturalist, geologist, and biologist'.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Charles_Darwin"
+          ]
+        },
+        {
+          "text": "In 1831, Charles Darwin joined the survey expedition on the HMS Beagle.",
+          "status": "supported",
+          "reasoning": "The evidence from snippet [3] explicitly states that the second survey expedition of HMS Beagle took place from 27 December 1831 to 2 October 1836, which includes the date 27 December 1831. Snippet [1] also mentions that the second voyage of HMS Beagle is notable for carrying the recently graduated, which aligns with the claim that Charles Darwin joined the expedition in 1831.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Second_voyage_of_HMS_Beagle"
+          ]
+        },
+        {
+          "text": "He, Charles Darwin, conducted extensive geological and biological observations in the Galapagos Islands.",
+          "status": "supported",
+          "reasoning": "Snippet 2 from 'On the Origin of Species' mentions that Darwin observed three separate species of Gal\u00e1pagos tortoises and birds, which aligns with the claim that he conducted extensive geological and biological observations in the Galapagos Islands.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/On_the_Origin_of_Species"
+          ]
+        },
+        {
+          "text": "In 1859, Charles Darwin published On the Origin of Species.",
+          "status": "supported",
+          "reasoning": "Both evidence [1] and [2] explicitly state that Charles Darwin published 'On the Origin of Species' in 1859.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/On_the_Origin_of_Species",
+            "https://en.wikipedia.org/wiki/Charles_Darwin"
+          ]
+        },
+        {
+          "text": "Charles Darwin proposed natural selection as the mechanism of evolutionary change.",
+          "status": "supported",
+          "reasoning": "Snippets [1] and [2] explicitly mention that Charles Darwin proposed natural selection as the mechanism of evolutionary change. Snippet [3] supports this by stating that the debate over Darwin's work led to the acceptance of natural selection as the specific mechanism he proposed.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Natural_selection",
+            "https://en.wikipedia.org/wiki/Charles_Darwin"
+          ]
+        },
+        {
+          "text": "Charles Darwin was buried in Westminster Abbey upon his death in 1882.",
+          "status": "supported",
+          "reasoning": "Snippet from URL https://en.wikipedia.org/wiki/Burials_and_memorials_in_Westminster_Abbey states that over 3,300 people are buried or commemorated in Westminster Abbey, and the snippet from URL https://en.wikipedia.org/wiki/Charles_Darwin indicates that Charles Darwin died in 1882. While it does not explicitly state that Darwin was buried there, the evidence strongly supports the claim.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Burials_and_memorials_in_Westminster_Abbey",
+            "https://en.wikipedia.org/wiki/Charles_Darwin"
+          ]
+        }
+      ],
+      "agreements": [
+        "\u2713 'Charles Darwin was an English naturalist born in 1809.' -> status: supported",
+        "\u2713 'Charles Darwin joined the survey expedition on the HMS Beagle in 1831.' -> status: supported",
+        "\u2713 'Charles Darwin visited and conducted observations in the Galapagos Islands.' -> status: supported",
+        "\u2713 'Charles Darwin published On the Origin of Species in 1859.' -> status: supported",
+        "\u2713 'Charles Darwin proposed natural selection as the mechanism of evolution.' -> status: supported",
+        "\u2713 'Charles Darwin was buried in Westminster Abbey in 1882.' -> status: supported"
+      ],
+      "disagreements": [],
+      "missed_claims": [],
+      "latency_seconds": 153.11,
+      "cost_log": {
+        "llm_calls": 7,
+        "search_calls": 6
+      }
+    },
+    {
+      "case_id": 28,
+      "category": "long_multi_fact",
+      "question": "Who was Ada Lovelace?",
+      "answer": "Ada Lovelace was an English mathematician and the daughter of poet Lord Byron. She collaborated with Charles Babbage on the mechanical general-purpose Analytical Engine. In 1843, she translated Luigi Menabrea's article and appended extensive notes. Lovelace wrote what is regarded as the first computer algorithm. She became the Prime Minister of the United Kingdom in 1848. Lovelace passed away in 1852.",
+      "gold_claims": [
+        {
+          "text": "Ada Lovelace was the daughter of poet Lord Byron.",
+          "label": "supported"
+        },
+        {
+          "text": "Ada Lovelace collaborated with Charles Babbage on the Analytical Engine.",
+          "label": "supported"
+        },
+        {
+          "text": "Ada Lovelace wrote what is regarded as the first computer algorithm.",
+          "label": "supported"
+        },
+        {
+          "text": "Ada Lovelace translated Luigi Menabrea's article on the Analytical Engine in 1843.",
+          "label": "supported"
+        },
+        {
+          "text": "Ada Lovelace became the Prime Minister of the United Kingdom in 1848.",
+          "label": "contradicted"
+        },
+        {
+          "text": "Ada Lovelace died in 1852.",
+          "label": "supported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "Ada Lovelace was an English mathematician.",
+          "status": "unsupported",
+          "reasoning": "None of the provided evidence snippets mention Ada Lovelace, her nationality, or her profession as a mathematician. The snippets are related to the ADA (Aeronautical Development Agency, Americans with Disabilities Act, and Aadhaar), which are unrelated to the claim about Ada Lovelace.",
+          "sources": []
+        },
+        {
+          "text": "Ada Lovelace was the daughter of poet Lord Byron.",
+          "status": "unsupported",
+          "reasoning": "None of the provided evidence snippets mention Ada Lovelace, Lord Byron, or any related historical information. The snippets are unrelated to the claim and pertain to different topics such as the ADA (Aeronautical Development Agency, the Americans with Disabilities Act, and Aadhaar).",
+          "sources": []
+        },
+        {
+          "text": "Ada Lovelace collaborated with Charles Babbage on the mechanical general-purpose Analytical Engine.",
+          "status": "supported",
+          "reasoning": "Both snippets [1] and [2] explicitly mention Ada Lovelace's work with Charles Babbage on the Analytical Engine, supporting the claim.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ada_Lovelace",
+            "https://en.wikipedia.org/wiki/History_of_software"
+          ]
+        },
+        {
+          "text": "In 1843, Ada Lovelace translated Luigi Menabrea's article and appended extensive notes.",
+          "status": "supported",
+          "reasoning": "The evidence snippet from the Wikipedia timeline of women in science states that Ada Lovelace translated Luigi Menabrea's article on Charles Babbage's machine during 1842-43, which aligns with the claim that she translated the article in 1843 and appended extensive notes.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Timeline_of_women_in_science"
+          ]
+        },
+        {
+          "text": "Lovelace wrote what is regarded as the first computer algorithm.",
+          "status": "supported",
+          "reasoning": "The evidence snippets from Wikipedia articles on Ada Lovelace, the history of computer science, and the history of computing hardware all support the claim that Lovelace wrote what is regarded as the first computer algorithm. Specifically, the snippets mention that Lovelace is credited as the pioneer of computer programming and that the algorithms she wrote for the analytical engine are recognized as the earliest examples of computer programming.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ada_Lovelace",
+            "https://en.wikipedia.org/wiki/History_of_computer_science",
+            "https://en.wikipedia.org/wiki/History_of_computing_hardware"
+          ]
+        },
+        {
+          "text": "Lovelace became the Prime Minister of the United Kingdom in 1848.",
+          "status": "contradicted",
+          "reasoning": "The evidence snippet from the biography of Luigi Federico Menabrea states that he was sent on diplomatic missions to secure the adhesion of Modena in 1848, which contradicts the claim that Lovelace became the Prime Minister of the United Kingdom in 1848.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Luigi_Federico_Menabrea"
+          ]
+        },
+        {
+          "text": "Lovelace passed away in 1852.",
+          "status": "supported",
+          "reasoning": "Snippet from Florence Nightingale's Wikipedia page mentions that she was friends with Ada Lovelace and that Lovelace died upon Nightingale's meeting with her, which implies Lovelace's death in 1852.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Florence_Nightingale"
+          ]
+        }
+      ],
+      "agreements": [
+        "\u2713 'Ada Lovelace collaborated with Charles Babbage on the Analytical Engine.' -> status: supported",
+        "\u2713 'Ada Lovelace wrote what is regarded as the first computer algorithm.' -> status: supported",
+        "\u2713 'Ada Lovelace translated Luigi Menabrea's article on the Analytical Engine in 1843.' -> status: supported",
+        "\u2713 'Ada Lovelace became the Prime Minister of the United Kingdom in 1848.' -> status: contradicted"
+      ],
+      "disagreements": [
+        "\u2717 'Ada Lovelace was the daughter of poet Lord Byron.' -> Pipeline: [unsupported] vs Gold: [supported] (Matched: 'Ada Lovelace was the daughter of poet Lord Byron.')",
+        "\u2717 'Ada Lovelace died in 1852.' -> Pipeline: [unsupported] vs Gold: [supported] (Matched: 'Ada Lovelace was an English mathematician.')"
+      ],
+      "missed_claims": [],
+      "latency_seconds": 223.4,
+      "cost_log": {
+        "llm_calls": 8,
+        "search_calls": 7
+      }
+    },
+    {
+      "case_id": 29,
+      "category": "long_multi_fact",
+      "question": "What are key facts about the International Space Station?",
+      "answer": "The International Space Station launched its first module, Zarya, into orbit in November 1998. The station has been continuously inhabited since November 2000. It is a joint collaboration involving NASA, Roscosmos, JAXA, ESA, and CSA. The ISS orbits Earth approximately once every 90 minutes. It travels at a speed of roughly 28,000 kilometers per hour. The station orbits at a geostationary altitude of 36,000 kilometers above Earth.",
+      "gold_claims": [
+        {
+          "text": "The first ISS module Zarya was launched in November 1998.",
+          "label": "supported"
+        },
+        {
+          "text": "The International Space Station has been continuously inhabited since November 2000.",
+          "label": "supported"
+        },
+        {
+          "text": "The ISS is a joint collaboration of NASA, Roscosmos, JAXA, ESA, and CSA.",
+          "label": "supported"
+        },
+        {
+          "text": "The ISS orbits Earth approximately once every 90 minutes.",
+          "label": "supported"
+        },
+        {
+          "text": "The ISS travels at approximately 28,000 kilometers per hour.",
+          "label": "supported"
+        },
+        {
+          "text": "The International Space Station orbits at a geostationary altitude of 36,000 kilometers.",
+          "label": "contradicted"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "The International Space Station launched its first module, Zarya, into orbit in November 1998.",
+          "status": "supported",
+          "reasoning": "Snippet [1] explicitly states that the Zarya module was launched on 20 November 1998, which confirms the claim.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Zarya_%28ISS_module%29"
+          ]
+        },
+        {
+          "text": "The station has been continuously inhabited since November 2000.",
+          "status": "unsupported",
+          "reasoning": "The evidence snippets do not provide specific information about the Amundsen\u2013Scott South Pole Station's continuous occupation since November 2000. Snippet [1] mentions continuous occupation but does not specify the start date, while snippet [2] discusses the International Space Station, and snippet [3] is about the first human settlements.",
+          "sources": []
+        },
+        {
+          "text": "The International Space Station is a joint collaboration involving NASA, Roscosmos, JAXA, ESA, and CSA.",
+          "status": "supported",
+          "reasoning": "The evidence from snippet [1] explicitly states that the International Space Station is operated by five partner space agencies: NASA, Roscosmos, ESA, JAXA, and CSA, which directly supports the claim.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/International_Space_Station"
+          ]
+        },
+        {
+          "text": "The ISS orbits Earth approximately once every 90 minutes.",
+          "status": "unsupported",
+          "reasoning": "None of the provided evidence snippets mention the orbital period of the ISS. Snippet [1] provides general information about the ISS, and snippet [2] discusses its assembly and size, while snippet [3] is about SpaceX. There is no information related to the claim about the ISS's orbital period.",
+          "sources": []
+        },
+        {
+          "text": "The station travels at a speed of roughly 28,000 kilometers per hour.",
+          "status": "supported",
+          "reasoning": "The evidence from snippet [1] explicitly states that the International Space Station travels at an average speed of 28,000 kilometres per hour, which directly supports the claim.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/International_Space_Station"
+          ]
+        },
+        {
+          "text": "The International Space Station orbits at a geostationary altitude of 36,000 kilometers above Earth.",
+          "status": "contradicted",
+          "reasoning": "The provided evidence snippets indicate that the International Space Station orbits at a low Earth orbit (LEO) altitude, which ranges from 160 km to 2,000 km above mean sea level. This contradicts the claim that it orbits at a geostationary altitude of 36,000 kilometers.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Geocentric_orbit",
+            "https://en.wikipedia.org/wiki/Earth_observation_satellite"
+          ]
+        }
+      ],
+      "agreements": [
+        "\u2713 'The first ISS module Zarya was launched in November 1998.' -> status: supported",
+        "\u2713 'The ISS is a joint collaboration of NASA, Roscosmos, JAXA, ESA, and CSA.' -> status: supported",
+        "\u2713 'The ISS travels at approximately 28,000 kilometers per hour.' -> status: supported",
+        "\u2713 'The International Space Station orbits at a geostationary altitude of 36,000 kilometers.' -> status: contradicted"
+      ],
+      "disagreements": [
+        "\u2717 'The International Space Station has been continuously inhabited since November 2000.' -> Pipeline: [unsupported] vs Gold: [supported] (Matched: 'The station has been continuously inhabited since November 2000.')",
+        "\u2717 'The ISS orbits Earth approximately once every 90 minutes.' -> Pipeline: [unsupported] vs Gold: [supported] (Matched: 'The ISS orbits Earth approximately once every 90 minutes.')"
+      ],
+      "missed_claims": [],
+      "latency_seconds": 168.03,
+      "cost_log": {
+        "llm_calls": 7,
+        "search_calls": 6
+      }
+    },
+    {
+      "case_id": 30,
+      "category": "long_multi_fact",
+      "question": "What is the history of the Great Wall of China?",
+      "answer": "The Great Wall of China was constructed along the northern borders of ancient Chinese states. Emperor Qin Shi Huang joined together several existing wall sections in the third century BC. The Ming dynasty constructed the most famous and well-preserved masonry sections. The wall system spans over 20,000 kilometers in total length. The Great Wall is easily visible from the Moon with the naked human eye. The Great Wall was declared a UNESCO World Heritage site in 1987.",
+      "gold_claims": [
+        {
+          "text": "The Great Wall of China was built along northern borders of ancient China.",
+          "label": "supported"
+        },
+        {
+          "text": "Emperor Qin Shi Huang joined existing wall sections in the third century BC.",
+          "label": "supported"
+        },
+        {
+          "text": "The Ming dynasty constructed well-preserved sections of the Great Wall.",
+          "label": "supported"
+        },
+        {
+          "text": "The Great Wall system measures over 20,000 kilometers in total length.",
+          "label": "supported"
+        },
+        {
+          "text": "The Great Wall of China is visible from the Moon with the naked human eye.",
+          "label": "contradicted"
+        },
+        {
+          "text": "The Great Wall was designated a UNESCO World Heritage Site in 1987.",
+          "label": "supported"
+        }
+      ],
+      "extracted_claims": [
+        {
+          "text": "The Great Wall of China was constructed along the northern borders of ancient Chinese states.",
+          "status": "unsupported",
+          "reasoning": "None of the provided evidence snippets mention the Great Wall of China or its construction. The snippets are related to the Brave browser and do not provide any information relevant to the claim.",
+          "sources": []
+        },
+        {
+          "text": "Emperor Qin Shi Huang joined together several existing wall sections in the third century BC.",
+          "status": "supported",
+          "reasoning": "Snippet from 'History of China' URL: https://en.wikipedia.org/wiki/History_of_China states that Qin Shi Huang unified China in 221 BC, which aligns with the claim that he joined wall sections in the third century BC.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/History_of_China"
+          ]
+        },
+        {
+          "text": "The Ming dynasty constructed the most famous and well-preserved masonry sections.",
+          "status": "contradicted",
+          "reasoning": "The evidence snippet from the Chinese city wall Wikipedia page states that the only surviving sections of the Ming dynasty's city walls are Qianmen's, implying that most sections have been demolished. This contradicts the claim that the Ming dynasty constructed the most famous and well-preserved masonry sections.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Chinese_city_wall"
+          ]
+        },
+        {
+          "text": "The wall system spans over 20,000 kilometers in total length.",
+          "status": "unsupported",
+          "reasoning": "None of the provided evidence snippets mention the length of any wall system, let alone a specific length of 20,000 kilometers.",
+          "sources": []
+        },
+        {
+          "text": "The Great Wall is easily visible from the Moon with the naked human eye.",
+          "status": "contradicted",
+          "reasoning": "The evidence snippet from the Wikipedia article on artificial structures visible from space directly contradicts the claim by stating that the Great Wall of China is not visible from the Moon with the naked human eye.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Artificial_structures_visible_from_space"
+          ]
+        },
+        {
+          "text": "The Great Wall was declared a UNESCO World Heritage site in 1987.",
+          "status": "unsupported",
+          "reasoning": "The provided evidence does not mention the Great Wall of China or its UNESCO World Heritage status. It only discusses other World Heritage Sites and the organization UNESCO.",
+          "sources": []
+        }
+      ],
+      "agreements": [
+        "\u2713 'Emperor Qin Shi Huang joined existing wall sections in the third century BC.' -> status: supported",
+        "\u2713 'The Great Wall of China is visible from the Moon with the naked human eye.' -> status: contradicted"
+      ],
+      "disagreements": [
+        "\u2717 'The Great Wall of China was built along northern borders of ancient China.' -> Pipeline: [unsupported] vs Gold: [supported] (Matched: 'The Great Wall of China was constructed along the northern borders of ancient Chinese states.')",
+        "\u2717 'The Ming dynasty constructed well-preserved sections of the Great Wall.' -> Pipeline: [contradicted] vs Gold: [supported] (Matched: 'The Ming dynasty constructed the most famous and well-preserved masonry sections.')",
+        "\u2717 'The Great Wall system measures over 20,000 kilometers in total length.' -> Pipeline: [unsupported] vs Gold: [supported] (Matched: 'The wall system spans over 20,000 kilometers in total length.')",
+        "\u2717 'The Great Wall was designated a UNESCO World Heritage Site in 1987.' -> Pipeline: [unsupported] vs Gold: [supported] (Matched: 'The Great Wall was declared a UNESCO World Heritage site in 1987.')"
+      ],
+      "missed_claims": [],
+      "latency_seconds": 151.55,
+      "cost_log": {
+        "llm_calls": 7,
+        "search_calls": 6
+      }
+    }
+  ]
+}
