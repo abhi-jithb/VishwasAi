@@ -14,6 +14,7 @@ if str(root_dir) not in sys.path:
 
 from backend.config import get_active_model, get_active_provider
 from backend.evaluation.pipeline import evaluate
+from backend.llm import get_models_used, model_fallback_disabled
 
 try:
     if sys.stdout.encoding.lower() != "utf-8":
@@ -272,6 +273,8 @@ def run_gold_evaluation(
         "timestamp": now_iso,
         "model": model_name,
         "provider": provider_name,
+        "models_used": get_models_used(),
+        "model_fallback_disabled": model_fallback_disabled(),
         "hardware": _detect_system_hardware(),
         "settings": {
             "temperature": 0.0,
@@ -321,6 +324,8 @@ def main() -> None:
     parser.add_argument("--no-save", action="store_true", help="Do not save results file")
     args = parser.parse_args()
 
+    # Benchmarks must never silently switch models on rate limits.
+    os.environ["NO_MODEL_FALLBACK"] = "1"
     if args.provider:
         os.environ["LLM_PROVIDER"] = args.provider
     if args.model:

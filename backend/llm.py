@@ -4,7 +4,9 @@ Exposes a unified call_llm function supporting official SDKs for OpenAI, Anthrop
 """
 
 import json
+import logging
 import os
+import threading
 import urllib.request
 import urllib.error
 
@@ -15,6 +17,29 @@ from backend.config import (
     get_active_provider,
 )
 from backend.cache import get_llm_cache, set_llm_cache
+
+logger = logging.getLogger(__name__)
+
+# Models that actually produced responses in this process (so benchmarks can record them).
+_MODELS_USED: set[str] = set()
+_MODELS_USED_LOCK = threading.Lock()
+
+
+def _record_model(model: str) -> None:
+    with _MODELS_USED_LOCK:
+        _MODELS_USED.add(model)
+
+
+def get_models_used() -> list[str]:
+    """Return the sorted list of model names that served responses so far."""
+    with _MODELS_USED_LOCK:
+        return sorted(_MODELS_USED)
+
+
+def model_fallback_disabled() -> bool:
+    """True when NO_MODEL_FALLBACK=1 (or BENCHMARK_MODEL is set) forbids switching models."""
+    flag = os.getenv("NO_MODEL_FALLBACK", "0").strip().lower() in ("1", "true", "yes")
+    return flag or bool(os.getenv("BENCHMARK_MODEL", "").strip())
 
 
 def call_llm(
@@ -39,7 +64,7 @@ def call_llm(
     """
     provider = get_active_provider()
     model = get_active_model()
-    benchmark_model = os.getenv("BENCHMARK_MODEL", "").strip()
+    no_fallback = model_fallback_disabled()
 
     # Determine if JSON structured format is required
     is_json = json_mode is True or (
@@ -57,6 +82,7 @@ def call_llm(
         format_type=format_type,
     )
     if cached_response is not None:
+        _record_model(model)
         return cached_response
 
     max_retries = 5
@@ -110,6 +136,7 @@ def call_llm(
                     response=response_text,
                     format_type=format_type,
                 )
+                _record_model(model)
                 return response_text
 
             # -------------------------------------------------------------
@@ -120,8 +147,8 @@ def call_llm(
 
                 client = Groq(api_key=LLM_API_KEY)
                 models_to_try = [model]
-                # If BENCHMARK_MODEL is set, strict benchmark execution: no fallback
-                if not benchmark_model:
+                # If BENCHMARK_MODEL or NO_MODEL_FALLBACK=1 is set, strict execution: no fallback
+                if not no_fallback:
                     for candidate in ["openai/gpt-oss-20b", "openai/gpt-oss-120b", "qwen/qwen3.8-27b"]:
                         if candidate not in models_to_try:
                             models_to_try.append(candidate)
@@ -147,10 +174,16 @@ def call_llm(
                             response=result_text,
                             format_type=format_type,
                         )
+                        _record_model(m)
                         return result_text
                     except Exception as exc:
                         model_err = exc
-                        if not benchmark_model and ("429" in str(exc) or "rate_limit" in str(exc)):
+                        if not no_fallback and ("429" in str(exc) or "rate_limit" in str(exc)):
+                            logger.warning(
+                                "Groq rate limit (429) on model '%s'; falling back to the next model. "
+                                "Set NO_MODEL_FALLBACK=1 to disable.",
+                                m,
+                            )
                             continue
                         raise exc
                 if model_err:
@@ -181,6 +214,7 @@ def call_llm(
                     response=result_text,
                     format_type=format_type,
                 )
+                _record_model(model)
                 return result_text
 
             # -------------------------------------------------------------
@@ -212,6 +246,7 @@ def call_llm(
                     response=result_text,
                     format_type=format_type,
                 )
+                _record_model(model)
                 return result_text
 
             raise ValueError(
