@@ -179,7 +179,8 @@ def verify_claim(
     except Exception as first_error:
         # Retry once with stricter prompt
         retry_prompt = VERIFY_CLAIM_RETRY_PROMPT_TEMPLATE.format(
-            raw_response=raw_response
+            original_prompt=user_prompt,
+            raw_response=raw_response,
         )
 
         if cost_tracker is not None:
