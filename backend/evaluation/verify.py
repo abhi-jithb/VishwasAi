@@ -89,11 +89,9 @@ def _clean_and_parse_verification_json(
     # If status is unsupported, ensure evidence_used is empty per instructions
     if status == "unsupported":
         evidence_used = []
-    elif available_urls:
-        # Filter to only URLs that were provided in evidence snippets
-        matched_urls = [u for u in evidence_used if u in available_urls]
-        if matched_urls:
-            evidence_used = matched_urls
+    else:
+        # Keep only URLs that were provided in evidence snippets (none in no-retrieval mode)
+        evidence_used = [u for u in evidence_used if u in available_urls]
 
     return {
         "status": status,
