@@ -14,6 +14,7 @@ if str(root_dir) not in sys.path:
 
 from backend.config import get_active_model, get_active_provider
 from backend.evaluation.pipeline import evaluate
+from backend.llm import get_models_used, model_fallback_disabled
 
 try:
     if sys.stdout.encoding.lower() != "utf-8":
@@ -43,32 +44,145 @@ def _claim_similarity(s1: str, s2: str) -> float:
     return 0.4 * jaccard + 0.6 * overlap
 
 
+SIMILARITY_THRESHOLD = 0.35
+LABELS = ["supported", "contradicted", "unsupported"]
+
+
+def match_gold_to_extracted(
+    gold_claims: list[dict[str, Any]],
+    extracted: list[dict[str, Any]],
+) -> list[tuple[int, float]]:
+    """Greedy one-to-one matching of gold claims to extracted claims.
+
+    Gold claims are processed in file order; each takes the most similar extracted
+    claim that is still unused. Returns (extracted_index or -1, best_similarity) per gold claim.
+    """
+    used: set[int] = set()
+    matches: list[tuple[int, float]] = []
+    for g in gold_claims:
+        best_sim = 0.0
+        best_idx = -1
+        for idx, ext in enumerate(extracted):
+            if idx in used:
+                continue
+            sim = _claim_similarity(g["text"], ext.get("text", ""))
+            if sim > best_sim:
+                best_sim = sim
+                best_idx = idx
+        # Similarity threshold for match
+        if best_sim >= SIMILARITY_THRESHOLD and best_idx != -1:
+            used.add(best_idx)
+            matches.append((best_idx, best_sim))
+        else:
+            matches.append((-1, best_sim))
+    return matches
+
+
+def confusion_matrix(pairs: list[tuple[str, str]]) -> dict[str, dict[str, int]]:
+    """Build a confusion matrix (rows gold, columns predicted) from (gold, predicted) label pairs."""
+    matrix = {g: {p: 0 for p in LABELS} for g in LABELS}
+    for gold, pred in pairs:
+        if gold in matrix and pred in matrix[gold]:
+            matrix[gold][pred] += 1
+    return matrix
+
+
+def per_class_prf(matrix: dict[str, dict[str, int]]) -> dict[str, dict[str, float | None]]:
+    """Per-class precision, recall and F1 (as percentages) from a confusion matrix."""
+    out: dict[str, dict[str, float | None]] = {}
+    for label in LABELS:
+        tp = matrix[label][label]
+        predicted = sum(matrix[g][label] for g in LABELS)
+        actual = sum(matrix[label].values())
+        precision = tp / predicted if predicted else None
+        recall = tp / actual if actual else None
+        if precision is not None and recall is not None and (precision + recall) > 0:
+            f1: float | None = 2 * precision * recall / (precision + recall)
+        else:
+            f1 = None
+        out[label] = {
+            "precision": round(precision * 100, 2) if precision is not None else None,
+            "recall": round(recall * 100, 2) if recall is not None else None,
+            "f1": round(f1 * 100, 2) if f1 is not None else None,
+            "support": actual,
+        }
+    return out
+
+
+def _run_cmd(cmd: list[str], timeout: float = 5.0) -> str:
+    import subprocess
+    try:
+        return subprocess.check_output(cmd, text=True, timeout=timeout, stderr=subprocess.DEVNULL).strip()
+    except Exception:
+        return ""
+
+
 def _detect_system_hardware() -> dict[str, Any]:
-    """Detect local runtime hardware specifications."""
+    """Read hardware specifications from the real machine (nothing hard-coded)."""
     import platform
-    hw = {
+    hw: dict[str, Any] = {
         "os": f"{platform.system()} {platform.release()} ({platform.machine()})",
         "cpu": platform.processor() or platform.machine(),
-        "ram_gb": 16,
-        "gpu": "CPU / Integrated",
+        "cpu_threads": os.cpu_count(),
+        "ram_gb": None,
+        "gpu": None,
     }
     try:
-        import psutil
-        hw["ram_gb"] = round(psutil.virtual_memory().total / (1024 ** 3))
+        for line in Path("/etc/os-release").read_text().splitlines():
+            if line.startswith("PRETTY_NAME="):
+                pretty = line.split("=", 1)[1].strip('"')
+                hw["os"] = f"{pretty} ({platform.release()})"
     except Exception:
         pass
-    try:
-        import subprocess
-        gpu_info = subprocess.check_output(
-            ["nvidia-smi", "--query-gpu=name,memory.total", "--format=csv,noheader"],
-            text=True,
-            timeout=2.0,
-        ).strip()
-        if gpu_info:
-            hw["gpu"] = gpu_info.split("\n")[0]
-    except Exception:
-        pass
+    for line in _run_cmd(["lscpu"]).splitlines():
+        if line.startswith("Model name:"):
+            hw["cpu"] = line.split(":", 1)[1].strip()
+    for line in _run_cmd(["free", "-b"]).splitlines():
+        if line.startswith("Mem:"):
+            hw["ram_gb"] = round(int(line.split()[1]) / (1024 ** 3), 1)
+    gpu_info = _run_cmd(
+        ["nvidia-smi", "--query-gpu=name,memory.total,driver_version", "--format=csv,noheader"]
+    )
+    if gpu_info:
+        hw["gpu"] = gpu_info.split("\n")[0]
     return hw
+
+
+def _ollama_model_info(model: str) -> dict[str, str]:
+    """Parse `ollama show <model>` for architecture, parameter count and quantization."""
+    info: dict[str, str] = {}
+    for line in _run_cmd(["ollama", "show", model], timeout=15.0).splitlines():
+        parts = line.split()
+        if len(parts) >= 2 and parts[0] in ("architecture", "parameters", "quantization"):
+            info[parts[0]] = parts[1]
+    version = _run_cmd(["ollama", "--version"])
+    if version:
+        info["ollama_version"] = version
+    return info
+
+
+def _git_commit() -> dict[str, Any]:
+    commit = _run_cmd(["git", "-C", str(root_dir), "rev-parse", "HEAD"])
+    dirty = bool(_run_cmd(["git", "-C", str(root_dir), "status", "--porcelain", "--untracked-files=no"]))
+    return {"commit": commit, "dirty_worktree": dirty}
+
+
+def _compact_trace(inspection: dict[str, Any] | None) -> dict[str, Any] | None:
+    """Keep the evidence and raw judge output from an inspection trace (drop constant prompts)."""
+    if not inspection:
+        return None
+    return {
+        "extraction_raw_response": inspection.get("extraction", {}).get("raw_response", ""),
+        "claims": [
+            {
+                "claim": c.get("claim", ""),
+                "search_query": c.get("search_query", ""),
+                "snippets": c.get("snippets", []),
+                "judge_raw_output": c.get("judge_raw_output", ""),
+            }
+            for c in inspection.get("claims", [])
+        ],
+    }
 
 
 def run_gold_evaluation(
@@ -76,6 +190,8 @@ def run_gold_evaluation(
     retrieval: bool = True,
     save_results: bool = True,
     output_path: str | None = None,
+    cold: bool = False,
+    case_ids: set[int] | None = None,
 ) -> dict[str, Any]:
     """Run pipeline against data/gold_claims.json and evaluate extraction & verification accuracy."""
     gold_path = root_dir / "data" / "gold_claims.json"
@@ -86,6 +202,8 @@ def run_gold_evaluation(
     with open(gold_path, "r", encoding="utf-8") as f:
         test_cases = json.load(f)
 
+    if case_ids is not None:
+        test_cases = [c for c in test_cases if c.get("id") in case_ids]
     if limit is not None:
         test_cases = test_cases[:limit]
 
@@ -106,6 +224,12 @@ def run_gold_evaluation(
 
     category_stats: dict[str, dict[str, int]] = {}
     detailed_cases: list[dict[str, Any]] = []
+    total_extracted_claims = 0
+    total_llm_calls = 0
+    total_search_calls = 0
+    label_pairs: list[tuple[str, str]] = []
+    failed_case_ids: list[Any] = []
+    search_provider_counts: dict[str, int] = {}
 
     bench_start_time = time.time()
 
@@ -130,15 +254,28 @@ def run_gold_evaluation(
 
         # Run pipeline evaluation with per-case latency timing
         case_t0 = time.time()
+        case_error: str | None = None
+        trace: dict[str, Any] | None = None
         try:
-            eval_result = evaluate(question=question, answer=answer, retrieval=retrieval)
+            # inspect=True only records traces (evidence snippets, raw judge output); it does not change verdicts
+            eval_result = evaluate(question=question, answer=answer, retrieval=retrieval, inspect=True)
             extracted = eval_result.get("claims", [])
             cost_log = eval_result.get("cost_log", {})
+            trace = _compact_trace(eval_result.get("inspection"))
         except Exception as exc:
             print(f"    [ERROR] Evaluation execution failed: {exc}", flush=True)
             extracted = []
             cost_log = {}
+            case_error = str(exc)
+            failed_case_ids.append(case_id)
         case_duration = time.time() - case_t0
+        total_extracted_claims += len(extracted)
+        total_llm_calls += cost_log.get("llm_calls", 0)
+        total_search_calls += cost_log.get("search_calls", 0)
+        for tc in (trace or {}).get("claims", []):
+            for snip in tc.get("snippets", []):
+                prov = snip.get("provider", "unknown (cached before provider field)")
+                search_provider_counts[prov] = search_provider_counts.get(prov, 0) + 1
 
         print(f"    Extracted {len(extracted)} claim(s) in {case_duration:.2f}s:", flush=True)
         for i, c in enumerate(extracted, 1):
@@ -155,26 +292,27 @@ def run_gold_evaluation(
         agreements: list[str] = []
         missed_list: list[str] = []
 
-        for g in gold_claims:
+        label_comparison: list[dict[str, Any]] = []
+        for g, (best_idx, best_sim) in zip(gold_claims, match_gold_to_extracted(gold_claims, extracted)):
             g_text = g["text"]
             g_label = g["label"].lower()
 
-            best_sim = 0.0
-            best_idx = -1
-
-            for idx, ext in enumerate(extracted):
-                if idx in matched_extracted_indices:
-                    continue
-                sim = _claim_similarity(g_text, ext.get("text", ""))
-                if sim > best_sim:
-                    best_sim = sim
-                    best_idx = idx
-
-            # Similarity threshold for match
-            if best_sim >= 0.35 and best_idx != -1:
+            if best_idx != -1:
                 matched_extracted_indices.add(best_idx)
                 ext_claim = extracted[best_idx]
                 ext_status = ext_claim.get("status", "unsupported").lower()
+                label_pairs.append((g_label, ext_status))
+                label_comparison.append(
+                    {
+                        "gold_text": g_text,
+                        "gold_label": g_label,
+                        "matched_extracted_index": best_idx,
+                        "matched_text": ext_claim.get("text", ""),
+                        "similarity": round(best_sim, 4),
+                        "predicted_label": ext_status,
+                        "agreed": ext_status == g_label,
+                    }
+                )
 
                 if ext_status == g_label:
                     total_agreed_status += 1
@@ -197,6 +335,17 @@ def run_gold_evaluation(
                 case_missed += 1
                 category_stats[category]["missed"] += 1
                 missed_list.append(f"• Missed gold claim: '{g_text}' (Gold: {g_label})")
+                label_comparison.append(
+                    {
+                        "gold_text": g_text,
+                        "gold_label": g_label,
+                        "matched_extracted_index": None,
+                        "matched_text": None,
+                        "similarity": round(best_sim, 4),
+                        "predicted_label": None,
+                        "agreed": False,
+                    }
+                )
 
         # Report case-level comparison
         if missed_list:
@@ -225,6 +374,11 @@ def run_gold_evaluation(
                 "missed_claims": missed_list,
                 "latency_seconds": round(case_duration, 2),
                 "cost_log": cost_log,
+                "num_extracted_claims": len(extracted),
+                "num_extra_claims": len(extracted) - len(matched_extracted_indices),
+                "label_comparison": label_comparison,
+                "error": case_error,
+                "trace": trace,
             }
         )
 
@@ -266,13 +420,28 @@ def run_gold_evaluation(
     now_iso = datetime.now().isoformat()
     clean_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     model_slug = re.sub(r"[^a-zA-Z0-9_\.]", "_", model_name)
+    matrix = confusion_matrix(label_pairs)
+    if failed_case_ids:
+        print(f"[WARNING] {len(failed_case_ids)} case(s) failed: {failed_case_ids}. Re-run them with --case-ids.")
 
     benchmark_record = {
         "benchmark": "Vishwas AI Gold Benchmark",
         "timestamp": now_iso,
         "model": model_name,
         "provider": provider_name,
+        "models_used": get_models_used(),
+        "model_fallback_disabled": model_fallback_disabled(),
         "hardware": _detect_system_hardware(),
+        "run_info": {
+            "git": _git_commit(),
+            "cold": cold,
+            "cache_disabled": os.getenv("DISABLE_CACHE", "0").lower() in ("1", "true", "yes"),
+            "model_info": _ollama_model_info(model_name) if provider_name == "ollama" else {},
+            "command": " ".join(sys.argv),
+            "case_ids": sorted(case_ids) if case_ids is not None else None,
+            "failed_case_ids": failed_case_ids,
+            "search_provider_counts": search_provider_counts,
+        },
         "settings": {
             "temperature": 0.0,
             "retrieval": retrieval,
@@ -291,6 +460,12 @@ def run_gold_evaluation(
             "total_latency_seconds": round(total_bench_duration, 2),
             "avg_latency_per_case_seconds": round(avg_latency, 2),
             "category_stats": category_stats,
+            "total_extracted_claims": total_extracted_claims,
+            "extra_extracted_claims": total_extracted_claims - total_matched_claims,
+            "total_llm_calls": total_llm_calls,
+            "total_search_calls": total_search_calls,
+            "confusion_matrix_matched": matrix,
+            "per_class_metrics": per_class_prf(matrix),
         },
         "cases": detailed_cases,
     }
@@ -299,6 +474,7 @@ def run_gold_evaluation(
         results_dir = root_dir / "results"
         results_dir.mkdir(parents=True, exist_ok=True)
         retrieval_tag = "" if retrieval else "_no_retrieval"
+        retrieval_tag += "_cold" if cold else ""
         if output_path:
             save_file = Path(output_path)
         else:
@@ -319,8 +495,15 @@ def main() -> None:
     parser.add_argument("--no-retrieval", action="store_true", help="Run no-retrieval baseline (parametric memory only)")
     parser.add_argument("--output", type=str, default=None, help="Specific JSON file to save results")
     parser.add_argument("--no-save", action="store_true", help="Do not save results file")
+    parser.add_argument("--cold", action="store_true", help="Disable the SQLite cache for this run (DISABLE_CACHE=1)")
+    parser.add_argument("--case-ids", type=str, default=None, help="Comma-separated case ids to run (e.g. to resume failed cases)")
     args = parser.parse_args()
 
+    if args.cold:
+        os.environ["DISABLE_CACHE"] = "1"
+
+    # Benchmarks must never silently switch models on rate limits.
+    os.environ["NO_MODEL_FALLBACK"] = "1"
     if args.provider:
         os.environ["LLM_PROVIDER"] = args.provider
     if args.model:
@@ -332,6 +515,8 @@ def main() -> None:
         retrieval=not args.no_retrieval,
         save_results=not args.no_save,
         output_path=args.output,
+        cold=args.cold,
+        case_ids={int(x) for x in args.case_ids.split(",")} if args.case_ids else None,
     )
 
 

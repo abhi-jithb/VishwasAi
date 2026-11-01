@@ -1,0 +1,47 @@
+============================= test session starts ==============================
+platform linux -- Python 3.14.8, pytest-9.2.0, pluggy-1.7.0 -- /home/abhijithb/vishwas_ai/venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/abhijithb/vishwas_ai
+plugins: anyio-4.15.1
+collecting ... collected 38 items
+
+tests/test_offline.py::test_claims_clean_array PASSED                    [  2%]
+tests/test_offline.py::test_claims_fenced_array PASSED                   [  5%]
+tests/test_offline.py::test_claims_dict_wrapped PASSED                   [  7%]
+tests/test_offline.py::test_claims_dict_of_strings PASSED                [ 10%]
+tests/test_offline.py::test_claims_array_inside_text PASSED              [ 13%]
+tests/test_offline.py::test_claims_malformed_raises PASSED               [ 15%]
+tests/test_offline.py::test_extract_claims_retry_includes_question_answer_and_bad_output PASSED [ 18%]
+tests/test_offline.py::test_parse_status[supported-supported] PASSED     [ 21%]
+tests/test_offline.py::test_parse_status[Supported-supported] PASSED     [ 23%]
+tests/test_offline.py::test_parse_status[contradicted-contradicted] PASSED [ 26%]
+tests/test_offline.py::test_parse_status[unsupported-unsupported] PASSED [ 28%]
+tests/test_offline.py::test_parse_status[not supported-unsupported] PASSED [ 31%]
+tests/test_offline.py::test_parse_status[NOT_SUPPORTED-unsupported] PASSED [ 34%]
+tests/test_offline.py::test_parse_status[not contradicted-unsupported] PASSED [ 36%]
+tests/test_offline.py::test_parse_status[supported (not contradicted)-supported] PASSED [ 39%]
+tests/test_offline.py::test_parse_status[insufficient evidence-unsupported] PASSED [ 42%]
+tests/test_offline.py::test_parse_status[-unsupported] PASSED            [ 44%]
+tests/test_offline.py::test_verification_json_not_supported_is_unsupported PASSED [ 47%]
+tests/test_offline.py::test_url_filter_drops_urls_not_in_evidence PASSED [ 50%]
+tests/test_offline.py::test_url_filter_no_fallback_to_unfiltered_urls PASSED [ 52%]
+tests/test_offline.py::test_verify_empty_evidence_skips_llm PASSED       [ 55%]
+tests/test_offline.py::test_verify_retry_includes_claim_and_evidence PASSED [ 57%]
+tests/test_offline.py::test_scoring_empty_list PASSED                    [ 60%]
+tests/test_offline.py::test_scoring_all_unsupported_has_no_verifiable_precision PASSED [ 63%]
+tests/test_offline.py::test_scoring_mixed PASSED                         [ 65%]
+tests/test_offline.py::test_scoring_unknown_status_counts_as_unsupported PASSED [ 68%]
+tests/test_offline.py::test_claim_similarity_worked_example PASSED       [ 71%]
+tests/test_offline.py::test_claim_similarity_identical_and_empty PASSED  [ 73%]
+tests/test_offline.py::test_greedy_matching_fixture PASSED               [ 76%]
+tests/test_offline.py::test_matching_reproduces_official_run PASSED      [ 78%]
+tests/test_offline.py::test_per_class_prf_and_zero_division PASSED       [ 81%]
+tests/test_offline.py::test_llm_cache_key_deterministic PASSED           [ 84%]
+tests/test_offline.py::test_search_cache_key_deterministic PASSED        [ 86%]
+tests/test_offline.py::test_search_duckduckgo_when_tavily_disabled PASSED [ 89%]
+tests/test_offline.py::test_search_wikipedia_when_duckduckgo_fails PASSED [ 92%]
+tests/test_offline.py::test_search_query_derivation_truncates_to_200_chars PASSED [ 94%]
+tests/test_offline.py::test_model_fallback_switch PASSED                 [ 97%]
+tests/test_offline.py::test_pipeline_end_to_end_mocked PASSED            [100%]
+
+============================== 38 passed in 0.30s ==============================

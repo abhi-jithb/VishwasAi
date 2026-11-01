@@ -31,7 +31,10 @@ Answer: {answer}
 
 Extract all atomic factual claims from the Answer above. Output ONLY a valid JSON array of strings:"""
 
-EXTRACT_CLAIMS_RETRY_PROMPT_TEMPLATE = """CRITICAL ERROR: Your previous response could not be parsed as a valid JSON array of strings.
+EXTRACT_CLAIMS_RETRY_PROMPT_TEMPLATE = """Original request:
+{original_prompt}
+
+CRITICAL ERROR: Your previous response could not be parsed as a valid JSON array of strings.
 Previous response received:
 {raw_response}
 
@@ -71,7 +74,10 @@ Evidence snippets:
 
 Verify the claim strictly against the snippets above. Return ONLY a JSON object:"""
 
-VERIFY_CLAIM_RETRY_PROMPT_TEMPLATE = """CRITICAL ERROR: Your previous response could not be parsed into the required JSON verification schema.
+VERIFY_CLAIM_RETRY_PROMPT_TEMPLATE = """Original request:
+{original_prompt}
+
+CRITICAL ERROR: Your previous response could not be parsed into the required JSON verification schema.
 Previous response received:
 {raw_response}
 

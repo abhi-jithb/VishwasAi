@@ -42,6 +42,7 @@ def web_search(query: str, max_results: int = 5) -> list[dict]:
                         "title": str(item.get("title", "")),
                         "url": str(item.get("url", "")),
                         "snippet": snippet,
+                        "provider": "tavily",
                     }
                 )
         except Exception:
@@ -50,7 +51,10 @@ def web_search(query: str, max_results: int = 5) -> list[dict]:
     # Fallback to DuckDuckGo or Wikipedia if Tavily is unavailable or returned empty results
     if not results:
         try:
-            from duckduckgo_search import DDGS
+            try:
+                from ddgs import DDGS
+            except ImportError:
+                from duckduckgo_search import DDGS
 
             ddgs = DDGS()
             ddg_results = list(ddgs.text(clean_query, max_results=max_results))
@@ -62,6 +66,7 @@ def web_search(query: str, max_results: int = 5) -> list[dict]:
                         "title": str(item.get("title", "")),
                         "url": str(item.get("href", "")),
                         "snippet": snippet,
+                        "provider": "duckduckgo",
                     }
                 )
         except Exception:
@@ -98,6 +103,7 @@ def web_search(query: str, max_results: int = 5) -> list[dict]:
                             "title": title,
                             "url": page_url,
                             "snippet": clean_snippet,
+                            "provider": "wikipedia",
                         }
                     )
         except Exception:

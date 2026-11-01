@@ -36,3 +36,7 @@ htmlcov/
 *.sqlite
 *.sqlite3
 
+
+# SQLite WAL side files
+data/*.db-shm
+data/*.db-wal
