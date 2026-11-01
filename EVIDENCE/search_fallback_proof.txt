@@ -1,0 +1,9 @@
+SEARCH_API_KEY set: False | DISABLE_CACHE=1
+--- Tavily disabled: 3 result(s)
+  [duckduckgo] Alexander Fleming - Wikipedia | https://en.wikipedia.org/wiki/Alexander_Fleming
+  [duckduckgo] History of penicillin - Wikipedia | https://en.wikipedia.org/wiki/History_of_penicillin
+  [duckduckgo] Alexander Fleming Discovery and Development of Penicillin - Landmark | https://www.acs.org/education/whatischemistry/landmarks/flemingpenicillin.html
+--- Tavily disabled + DuckDuckGo forced to fail: 3 result(s)
+  [wikipedia] Alexander Fleming | https://en.wikipedia.org/wiki/Alexander_Fleming
+  [wikipedia] Discovery of penicillin | https://en.wikipedia.org/wiki/Discovery_of_penicillin
+  [wikipedia] St Mary's Hospital, London | https://en.wikipedia.org/wiki/St_Mary%27s_Hospital%2C_London

@@ -123,7 +123,8 @@ def extract_claims(
     except Exception as first_error:
         # Retry once with stricter prompt
         retry_prompt = EXTRACT_CLAIMS_RETRY_PROMPT_TEMPLATE.format(
-            raw_response=raw_response
+            original_prompt=user_prompt,
+            raw_response=raw_response,
         )
 
         if cost_tracker is not None:

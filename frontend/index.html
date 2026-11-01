@@ -1296,6 +1296,7 @@
       const chipClass = status === 'supported' ? 'vc-sup' : status === 'contradicted' ? 'vc-con' : 'vc-uns';
 
       const srcHTML = (claim.sources || []).map(url => {
+      const sources = (claim.sources || []).filter(url => /^https?:\/\//i.test(String(url))).map(url => {
         const host = (() => { try { return new URL(url).hostname; } catch { return url; } })();
         return `<a class="src-tag" href="${escHtml(url)}" target="_blank" rel="noopener" title="${escHtml(url)}">↗ ${escHtml(host)}</a>`;
       }).join('');
@@ -1409,6 +1410,11 @@
       .replace(/</g,'&lt;')
       .replace(/>/g,'&gt;')
       .replace(/"/g,'&quot;');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 
   /* Ctrl/Cmd + Enter shortcut */

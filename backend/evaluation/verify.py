@@ -25,6 +25,26 @@ def _format_evidence_snippets(evidence: list[dict[str, str]]) -> str:
     return "\n\n".join(blocks)
 
 
+# Negated phrases are checked before plain substrings so that "not supported"
+# never parses as supported and "not contradicted" never parses as contradicted.
+_UNSUPPORTED_PHRASES = ("unsupported", "not supported", "not_supported", "no support", "insufficient", "not enough")
+_NOT_CONTRADICTED_PHRASES = ("not contradicted", "not contradict", "no contradiction", "uncontradicted", "non-contradict")
+
+
+def _parse_status(raw_status: str) -> str:
+    """Map a free-form status string to supported / contradicted / unsupported."""
+    text = raw_status.strip().lower()
+    if any(p in text for p in _UNSUPPORTED_PHRASES):
+        return "unsupported"
+    for p in _NOT_CONTRADICTED_PHRASES:
+        text = text.replace(p, " ")
+    if "contradict" in text:
+        return "contradicted"
+    if "support" in text:
+        return "supported"
+    return "unsupported"
+
+
 def _clean_and_parse_verification_json(
     raw_text: str,
     available_urls: set[str],
@@ -51,15 +71,7 @@ def _clean_and_parse_verification_json(
     if not isinstance(data, dict):
         raise ValueError(f"Expected JSON object, got {type(data).__name__}")
 
-    raw_status = str(data.get("status", "")).strip().lower()
-    if "unsupported" in raw_status:
-        status = "unsupported"
-    elif "contradict" in raw_status:
-        status = "contradicted"
-    elif "support" in raw_status:
-        status = "supported"
-    else:
-        status = "unsupported"
+    status = _parse_status(str(data.get("status", "")))
 
     reasoning = str(data.get("reasoning", "")).strip()
     if not reasoning:
@@ -77,11 +89,9 @@ def _clean_and_parse_verification_json(
     # If status is unsupported, ensure evidence_used is empty per instructions
     if status == "unsupported":
         evidence_used = []
-    elif available_urls:
-        # Filter to only URLs that were provided in evidence snippets
-        matched_urls = [u for u in evidence_used if u in available_urls]
-        if matched_urls:
-            evidence_used = matched_urls
+    else:
+        # Keep only URLs that were provided in evidence snippets (none in no-retrieval mode)
+        evidence_used = [u for u in evidence_used if u in available_urls]
 
     return {
         "status": status,
@@ -167,7 +177,8 @@ def verify_claim(
     except Exception as first_error:
         # Retry once with stricter prompt
         retry_prompt = VERIFY_CLAIM_RETRY_PROMPT_TEMPLATE.format(
-            raw_response=raw_response
+            original_prompt=user_prompt,
+            raw_response=raw_response,
         )
 
         if cost_tracker is not None:
