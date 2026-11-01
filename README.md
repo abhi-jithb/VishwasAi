@@ -170,6 +170,8 @@ vishwas_ai/
 ├── tests/run_gold.py           # benchmark runner
 ├── scripts/                    # connectivity checks, comparison, error report
 ├── results/                    # saved scorecards
+├── EVIDENCE/                   # traced numbers, glossary, limitations, demo checklist
+├── _archive/                   # retired files, not used by the running code
 └── docs/
     ├── README.md               # what is done, what to run next, which numbers to cite
     ├── PITCHING.md             # the viva: transformers, terms, and the product path
