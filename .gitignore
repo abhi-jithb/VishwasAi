@@ -1,7 +1,14 @@
 # Environment variables and secrets
 .env
 .env.*
+*.env
 !.env.example
+
+# Local SQLite databases and caches
+*.db
+*.db-shm
+*.db-wal
+data/*.db*
 
 # Virtual environments
 venv/
